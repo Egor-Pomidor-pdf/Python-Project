@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException, Depends, status, Body, Query
-from pydantic import BaseModel, Field, confloat
-from typing import Optional, List
+from fastapi import FastAPI, HTTPException, Depends, status
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional
+import jwt
 from bcrypt import hashpw, gensalt, checkpw
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
@@ -8,9 +9,12 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, Integer, String, select, Float, ForeignKey, DateTime
 from faker import Faker
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 
 fake = Faker('ru_RU')
+SECRET_KEY = "Ziben6"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 SQL_DATABASE_URL = "sqlite+aiosqlite:///./ticket_booking.db"
 engine = create_async_engine(SQL_DATABASE_URL, echo=True)
@@ -18,7 +22,6 @@ AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=F
 Base = declarative_base()
 
 """Classes"""
-
 
 class User(Base):
     __tablename__ = "users"
@@ -29,17 +32,22 @@ class User(Base):
     last_name = Column(String)
     middle_name = Column(String, nullable=True)
     email = Column(String, unique=True)
-    phone = Column(String, unique=True)
+    phone_number = Column(String, unique=True)
     password_hash = Column(String)
 
 
 class UserCreate(BaseModel):
+    last_name: str
+    first_name: str
+    middle_name: Optional[str] = None
     username: str
+    phone_number: str
+    email: EmailStr
     password: str
 
 
 class UserLogin(BaseModel):
-    username: str
+    login: str
     password: str
 
 
@@ -105,7 +113,6 @@ async def get_db():
             await db.rollback()
             raise
 
-
 def validate_payment_data(payment_data: RequestPayment):
     month, year = payment_data.expiry_date.split("/")
     if int(year) < (datetime.now().year % 100) or (
@@ -118,9 +125,8 @@ def process_payment(payment_data: RequestPayment):
     return random.random() < 0.95
 
 
-async def log_transaction(db: AsyncSession, user_id: int, event_id: int, amount: float, success: bool):
+async def log_transaction(db: AsyncSession, event_id: int, amount: float, success: bool):
     transaction = Transaction(
-        user_id=user_id,
         event_id=event_id,
         amount=amount,
         status="completed" if success else "failed",
@@ -156,29 +162,41 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     res = await db.execute(User.__table__.select().where(User.username == user.username))
     db_user = res.scalars().first()
     if db_user:
-        raise HTTPException(status_code=400, detail="Username have already registered")
+        if db_user.email == user.email:
+            raise HTTPException(status_code=400, detail="e-mail занят")
+        elif db_user.username == user.username:
+            raise HTTPException(status_code=400, detail="Имя пользвоателя занято")
+        elif db_user.phone == user.phone_number:
+            raise HTTPException(status_code=400, detail="Номер телефона занят")
 
     salt = gensalt()
     password_hash = hashpw(user.password.encode('utf-8'), salt)
-    db_user = User(username=user.username, password_hash=password_hash.decode('utf-8'))
+    db_user = User(
+        last_name=user.last_name,
+        first_name=user.first_name,
+        middle_name=user.middle_name,
+        username=user.username,
+        phone_number=user.phone_number,
+        email=user.email,
+        password_hash=password_hash.decode('utf-8')
+    )
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
-    return {"message": "User has registered"}
-
+    return {"message": "Пользователь был успешно зарегистрирован"}
 
 @app.post("/login")
 async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(User).where(User.username == user.username))
+    result = await db.execute(select(User).where((User.username == user.login) | (User.email == user.login) | (User.phone_number == user.login)))
     db_user = result.scalar_one_or_none()
 
     if not db_user:
-        raise HTTPException(status_code=401, detail="Invalid login or password")
+        raise HTTPException(status_code=401, detail="Пользователь не зарегистрирован")
 
     if not checkpw(user.password.encode('utf-8'), db_user.password_hash.encode('utf-8')):
-        raise HTTPException(status_code=401, detail="Invalid login or password")
+        raise HTTPException(status_code=401, detail="Неверный логин или пароль")
 
-    return {"message": "Login successfully"}
+    return {"message": "Вход выполнен успешно"}
 
 
 @app.post("/generate_events", status_code=status.HTTP_201_CREATED)
@@ -193,7 +211,7 @@ async def generate_events(db: AsyncSession = Depends(get_db)):
         )
         db.add(event)
     await db.commit()
-    return {"message": "50 events generated successfully with Russian cities"}
+    return {"message": "50 мероприятий успешно сгенерированы"}
 
 
 @app.get("/events/filter")
@@ -242,27 +260,27 @@ async def book_ticket(
     event_result = await db.execute(select(Event).where(Event.id == book_data.event_id))
     event = event_result.scalar_one_or_none()
     if not event:
-        raise HTTPException(status_code=404, detail="Event not found")
+        raise HTTPException(status_code=404, detail="Мероприятие не найдено")
 
     if event.available_tickets < book_data.ticket_count:
-        raise HTTPException(status_code=400, detail=f"Only {event.available_tickets} tickets available")
+        raise HTTPException(status_code=400, detail=f"Только {event.available_tickets} билетов осталось")
 
     total_cost = event.price * book_data.ticket_count
 
     if not validate_payment_data(payment_data):
-        raise HTTPException(status_code=400, detail="Invalid payment data")
+        raise HTTPException(status_code=400, detail="Неверные платежные данные")
 
     if not process_payment(payment_data):
         await log_transaction(db, event.id, total_cost, False)
-        raise HTTPException(status_code=402, detail="Payment failed. Please check your payment details and try again")
+        raise HTTPException(status_code=402, detail="Ошибка оплаты. Пожалуйста, проверьте платежные данные и попробуйте снова")
 
     event.available_tickets -= book_data.ticket_count
     transaction = await log_transaction(db, event.id, total_cost, True)
     await db.commit()
 
     return {
-        "message": f"Ticket for {event.name} successfully booked",
-        "transaction_id": transaction.id,
-        "amount": total_cost,
-        "tickets": book_data.ticket_count
+        "message": f"Билеты на {event.name} успешно приобретены",
+        "id транзакции": transaction.id,
+        "Общая сумма": total_cost,
+        "Кол-во билетов": book_data.ticket_count
     }
