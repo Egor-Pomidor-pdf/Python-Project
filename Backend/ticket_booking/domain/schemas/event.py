@@ -17,7 +17,7 @@ class EventOut(BaseModel):
     available_tickets: int
 
     class Config:
-        orm_mode = True
+        from_attributes=True
 
 class EventFilter(BaseModel):
     name: Optional[str] = None
