@@ -22,3 +22,7 @@ class UserOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class Register_specialist(BaseModel):
+    username: str
+    role: str
