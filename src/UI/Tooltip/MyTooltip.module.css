@@ -1,0 +1,21 @@
+.toltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.toltip__text {
+    position: absolute;
+    bottom: 120%;
+    padding: 10px;
+    background-color: rgb(128, 86, 226);
+    border-radius: 10px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.toltip:hover .toltip__text {
+    visibility: visible;
+    opacity: 1;
+}

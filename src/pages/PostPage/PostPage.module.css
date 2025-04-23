@@ -1,0 +1,72 @@
+/* оснвой заголовок и изображение */
+.PostTitleWithImage__title {
+  font-family: Inter;
+  font-weight: 900;
+  font-size: 60px;
+  padding-left: 70px;
+}
+.PostTitleWithImage {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  background-image: url("./image/PostBackground.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 700px;
+
+}
+
+.PostTitleWithImage__img {
+  margin-left: -10px;
+  max-width: 725px;
+}
+
+/* фильтр и заголовок "мероприятия" */
+.Filter__SearchAndSelect {
+  display: flex;
+  justify-content: space-between;
+  /* другие стили */
+  padding: 0 60px;
+  display: flex;
+  
+}
+
+
+
+.Filter__blotTitle__title {
+  align-self: center;
+  font-family: Inter;
+  font-weight: 900;
+  font-size: 40px;
+  text-align: center;
+  background: radial-gradient(
+    150% 150% at 50% 50%,
+    rgba(255, 179, 209, 0.2) 0%,  /* Полупрозрачный розовый */
+    #ffb3d1 18.43%,
+    #7850f0 54.49%,
+    rgba(120, 80, 240, 0.2) 100%   /* Полупрозрачный фиолетовый */
+  );
+  filter: blur(1px); /* Небольшое размытие */
+  max-width: 380px;
+  justify-self: center;
+    margin: 85px;
+}
+
+
+.Filter__blotTitle__Stars {
+   display: grid;
+}
+.Filter {
+    max-width: 100%;
+    /* width: 1268px; */
+    height: 270px;
+    background-image: url("./image/secondSection.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    /* background-size: cover */
+}
+
+.test {
+}

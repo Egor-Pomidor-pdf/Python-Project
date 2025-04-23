@@ -9,7 +9,8 @@ const BookingTicket = () => {
   const [card_holder, setCard_holder] = useState("");
   const [cvv, setCvv] = useState("");
   const location = useLocation();
-  const event_id = location.state.id
+  const navigate = useNavigate();
+  const event_id = location.state.id;
   const bookingTicket = {
     book_data: {
       event_id,
@@ -24,20 +25,21 @@ const BookingTicket = () => {
   };
 
   const bookFormSend = async (e) => {
-    const navigate = useNavigate()
     e.preventDefault();
     console.log(bookingTicket);
     await axios
       .post("http://26.65.201.207:8000/booking/book-ticket", bookingTicket)
       .then((response) => {
         console.log("Билет куплен");
-        navigate("./home")
+        navigate("/ticketGood");
       })
       .catch((error) => {
-        console.error("ОШИБКА", error)
+        console.error("ОШИБКА", error);
         if (error.response) {
           console.log("Ответ от сервера:", error.response.data);
-        };
+          console.error(error.response.data.detail[0].msg);
+          navigate('/ticketBad')
+        } 
       });
 
     setTicket_count(0);

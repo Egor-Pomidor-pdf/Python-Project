@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom"; 
 import "./styles/App.css";
-import Post from "./components/Post";
 import PostWithTitle from "./components/PostWithTitle";
 import PostService from "./API/PostService";
-import PostsPage from "./pages/PostsPage";
 import Navabar from "./UI/Navabar/Navabar";
 import HomePage from "./pages/HomePage";
 import AppRouter from "./components/AppRouter";

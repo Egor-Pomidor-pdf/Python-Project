@@ -1,3 +1,61 @@
 .navabar {
-    color: teal;
+  height: 130px;
+
+  padding-top: 80px;
+  max-width: 1210px;
+  margin: 0 auto;
+  margin-bottom: -130px;
+}
+
+.navabar__links {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30px;
+}
+
+.navabar__logo {
+  position: relative;
+  width: 175px;
+  height: 60px;
+}
+
+.navabar__logo__img {
+  position: absolute;
+}
+
+.navabar__logo__title {
+  position: absolute;
+  z-index: 2;
+  font-family: Inter;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 1);
+  right: 15%;
+  top: 33%;
+}
+
+.navabar__links__item {
+  background-color: #7634d3;
+  height: 40px;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 1);
+  font-weight: 800;
+  padding: 8px;
+  text-align: center;
+  border-radius: 50px;
+  text-decoration: none;
+}
+
+.navabar__links__logAndReg {
+    display: flex;
+    gap: 30px;
+}
+
+.navabar__links__item_reg {
+    width: 205px;
+}
+
+.navabar__links__item_log {
+    width: 115px;
 }
