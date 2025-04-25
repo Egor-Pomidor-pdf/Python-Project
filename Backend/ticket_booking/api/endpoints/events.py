@@ -15,22 +15,9 @@ async def generate_events(db: AsyncSession = Depends(get_db)):
 
 @router.get("/filter")
 async def filter_events(
-    name: str = None,
-    city: str = None,
-    date_from: str = None,
-    date_to: str = None,
-    price_min: float = None,
-    price_max: float = None,
+    filter_data: EventFilter = Depends(),
     db: AsyncSession = Depends(get_db)
 ):
-    filters = {
-        'name': name,
-        'city': city,
-        'date_from': date_from,
-        'date_to': date_to,
-        'price_min': price_min,
-        'price_max': price_max
-    }
     event_repo = EventRepository(db)
     event_service = EventService(event_repo)
-    return await event_service.filter_events(filters)
+    return await event_service.filter_events(filter_data.dict(exclude_unset=True))

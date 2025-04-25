@@ -24,12 +24,20 @@ class EventService:
         return {"message": f"{count} мероприятий успешно сгенерированы"}
 
     async def filter_events(self, filters: dict):
-        events = await self.event_repo.filter_events(filters)
-        return [{
+        result = await self.event_repo.filter_events(filters)
+        events = [{
             "id": event.id,
             "name": event.name,
             "date": event.date,
             "city": event.city,
             "price": event.price,
             "available_tickets": event.available_tickets
-        } for event in events]
+        } for event in result['events']]
+
+        return {
+            "events": events,
+            "total_count": result['total_count'],
+            "page": result['page'],
+            "page_size": result['page_size'],
+            "total_pages": (result['total_count'] + result['page_size'] - 1) // result['page_size']
+        }
