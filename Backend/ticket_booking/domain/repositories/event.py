@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func
 from ticket_booking.domain.models.event import Event
 from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
 
@@ -35,8 +35,22 @@ class EventRepository:
         if filters.get('price_max') is not None:
             query = query.where(Event.price <= filters['price_max'])
 
+        count_query = select(func.count()).select_from(query.subquery())
+        total_count = (await self.session.execute(count_query)).scalar()
+
+        page = filters.get('page', 1)
+        page_size = filters.get('page_size', 10)
+        query = query.offset((page - 1) * page_size).limit(page_size)
+
         result = await self.session.execute(query)
-        return result.scalars().all()
+        events = result.scalars().all()
+
+        return {
+            "events": events,
+            "total_count": total_count,
+            "page": page,
+            "page_size": page_size
+        }
 
     async def update_tickets(self, event_id: int, ticket_count: int):
         event = await self.get_by_id(event_id)
