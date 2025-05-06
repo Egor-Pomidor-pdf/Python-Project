@@ -26,6 +26,8 @@ class EventFilter(BaseModel):
     city: Optional[str] = None
     price_min: Optional[float] = None
     price_max: Optional[float] = None
+    page: int = Field(1, ge=1, description="Номер страницы")
+    page_size: int = Field(10, ge=1, le=100, description="Количество элементов на странице")
 
 class BookTicketRequest(BaseModel):
     event_id: int
