@@ -20,7 +20,7 @@ const AuthPage = () => {
         ← Назад
       </button>
       
-      <div className="auth-logo">6MO</div>
+      <div className="auth-logo">Регистрация</div>
       
       <form className="auth-form" onSubmit={handleSubmit}>
         <div className="input-container">
