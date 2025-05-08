@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
+import './RegisterPage.css';
 
 const RegisterPage = () => {
   const [firstName, setFirstName] = useState("");
@@ -88,7 +89,7 @@ const RegisterPage = () => {
           type="text"
           placeholder="Пароль"
         />
-        <button>Заркгистрироваться</button>
+        <button>Зарeгистрироваться</button>
       </form>
     </div>
   );
