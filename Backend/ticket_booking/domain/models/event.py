@@ -8,5 +8,6 @@ class Event(Base):
     name = Column(String)
     date = Column(String)
     city = Column(String)
+    genre = Column(String, nullable=True)
     price = Column(Float)
     available_tickets = Column(Integer)
