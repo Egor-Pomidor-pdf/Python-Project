@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.types import JSON
 from ticket_booking.infrastructure.database import Base
 
 class User(Base):
@@ -12,3 +13,4 @@ class User(Base):
     email = Column(String, unique=True)
     phone_number = Column(String, unique=True)
     password_hash = Column(String)
+    preferences = Column(JSON, nullable=True)
