@@ -1,7 +1,10 @@
 from faker import Faker
 import random
+from ticket_booking.domain.schemas.event import EventCreate
 from fastapi import HTTPException, status
 from ticket_booking.domain.repositories.event import EventRepository
+from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
+
 
 
 class EventService:
@@ -43,21 +46,30 @@ class EventService:
             "total_pages": (result['total_count'] + result['page_size'] - 1) // result['page_size']
         }
     
-    async def archive(self, event_id: int):
-        try:
-            event = await self.event_repo.archive(event_id)
-            return {
-                "id": event.id,
-                "name": event.name,
-                "date": event.date,
-                "city": event.city,
-                "price": event.price,
-                "available_tickets": event.available_tickets,
-                "is_archived": event.is_archived
-            }
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Мероприятие с ID {event_id} не найдено"
-            )
+    async def archive_event(self, event_id: int):
+        event = await self.event_repo.archive_event(event_id)
         
+        if not event:
+            raise EventNotFoundException()
+        
+        return {
+            "id": event.id,
+            "name": event.name,
+            "date": event.date,
+            "city": event.city,
+            "price": event.price,
+            "available_tickets": event.available_tickets,
+            "is_archived": event.is_archived
+        }
+        
+    async def delete_event(self, event_id: int):
+        try:
+            await self.event_repo.delete_event(event_id)
+        except Exception:
+            raise EventNotFoundException()
+        
+    async def create_event(self, event_data: EventCreate):
+        try:
+            return await self.event_repo.create_event(event_data)
+        except Exception:
+            raise EventNotFoundException()
