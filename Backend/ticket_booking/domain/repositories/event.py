@@ -59,3 +59,12 @@ class EventRepository:
         event.available_tickets -= ticket_count
         await self.session.flush()
         return event
+    
+    async def archive(self, event_id: int):
+        result = await self.session.execute(select(Event).where(Event.id == event_id))
+        event = result.scalar_one_or_none()
+        if not event:
+            raise EventNotFoundException()
+        
+        event.is_archived = True
+        return event

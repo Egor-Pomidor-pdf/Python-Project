@@ -22,7 +22,7 @@ class AuthService:
         is_specialist = await self.specialist_repo.is_specialist(login)
         if is_specialist:
             return {
-                "message": "Вход выполнен успешно, теперь вы специалист",
+                "message": "Вход выполнен успешно, Вы специалист",
                 "access_token": create_access_token({"sub": user.username}),
                 "token_type": "bearer"
             }

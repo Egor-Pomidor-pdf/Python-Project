@@ -21,3 +21,9 @@ async def filter_events(
     event_repo = EventRepository(db)
     event_service = EventService(event_repo)
     return await event_service.filter_events(filter_data.dict(exclude_unset=True))
+
+@router.patch("/{event_id}/archive")
+async def archive_event(event_id: int, db: AsyncSession = Depends(get_db)):
+    event_repo = EventRepository(db)
+    event_service = EventService(event_repo)
+    return await event_service.archive(event_id)

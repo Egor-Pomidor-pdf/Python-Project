@@ -1,5 +1,6 @@
 from faker import Faker
 import random
+from fastapi import HTTPException, status
 from ticket_booking.domain.repositories.event import EventRepository
 
 
@@ -41,3 +42,22 @@ class EventService:
             "page_size": result['page_size'],
             "total_pages": (result['total_count'] + result['page_size'] - 1) // result['page_size']
         }
+    
+    async def archive(self, event_id: int):
+        try:
+            event = await self.event_repo.archive(event_id)
+            return {
+                "id": event.id,
+                "name": event.name,
+                "date": event.date,
+                "city": event.city,
+                "price": event.price,
+                "available_tickets": event.available_tickets,
+                "is_archived": event.is_archived
+            }
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Мероприятие с ID {event_id} не найдено"
+            )
+        
