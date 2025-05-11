@@ -8,7 +8,9 @@ class AuthService:
         self.user_repo = user_repository
 
     async def register_user(self, user_data: dict):
-        user_data['password_hash'] = get_password_hash(user_data.pop('password'))
+        user_data['password_hash'] = get_password_hash(user_data.pop('password'), user_data['username'])
+        if 'preferences' not in user_data:
+            user_data['preferences'] = []
         user = await self.user_repo.create(user_data)
         return {"message": "Пользователь был успешно зарегистрирован"}
 
