@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class RatingOut(BaseModel):
     id: int
     user_id: int
@@ -9,9 +10,11 @@ class RatingOut(BaseModel):
     class Config:
         from_attributes = True
 
+
 class ReviewCreate(BaseModel):
     event_id: int
     comment: str
+
 
 class ReviewOut(BaseModel):
     id: int

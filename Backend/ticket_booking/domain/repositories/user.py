@@ -32,7 +32,7 @@ class UserRepository:
         await self.session.flush()
         return user
 
-    async def authenticate(self, login: str, password: str):
+    async def authenticate(self, login: str):
         user = await self.get_by_username(login)
         if not user:
             user = await self.get_by_email(login)

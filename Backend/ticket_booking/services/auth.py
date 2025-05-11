@@ -15,8 +15,8 @@ class AuthService:
         return {"message": "Пользователь был успешно зарегистрирован"}
 
     async def authenticate_user(self, login: str, password: str):
-        user = await self.user_repo.authenticate(login, password)
-        if not user or not verify_password(password, user.password_hash):
+        user = await self.user_repo.authenticate(login)
+        if not user or not verify_password(password, user.password_hash, user.username):
             raise InvalidCredentialsException("Неверный логин или пароль")
 
         return {

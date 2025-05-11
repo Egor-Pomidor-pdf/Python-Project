@@ -1,8 +1,11 @@
 from bcrypt import hashpw, gensalt, checkpw
+from fastapi.security import OAuth2PasswordBearer
 from ticket_booking.core.config import settings
 import jwt
 from datetime import datetime, timedelta
 
+csrf_storage = {}
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 def get_password_hash(password: str, username: str) -> str:
     salt = gensalt() + settings.GLOBAL_SALT.encode('utf-8') if username else gensalt()
     return hashpw((password + (username or "")).encode('utf-8'), salt).decode('utf-8')

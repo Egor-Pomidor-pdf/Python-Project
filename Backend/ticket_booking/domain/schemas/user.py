@@ -11,7 +11,7 @@ class UserCreate(BaseModel):
     password: str
     preferences: Optional[List[str]] = None
 class UserLogin(BaseModel):
-    login: str
+    username: str
     password: str
 
 class UserOut(BaseModel):
