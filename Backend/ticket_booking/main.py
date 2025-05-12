@@ -1,7 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from ticket_booking.api.endpoints import auth, events, booking
-from ticket_booking.infrastructure.database import init_db
+from ticket_booking.api.endpoints import auth, events, booking, profile
+from ticket_booking.infrastructure.database import init_db, AsyncSessionLocal
+from ticket_booking.services.event import EventService
+from ticket_booking.domain.repositories.event import EventRepository
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import secrets
 from ticket_booking.core.security import csrf_storage
 
@@ -15,6 +18,7 @@ app.add_middleware(
     allow_headers=["X-CSRF-Token"],
 )
 
+
 @app.middleware("http")
 async def add_csrf_token(request: Request, call_next):
     token = secrets.token_hex(16)
@@ -24,14 +28,25 @@ async def add_csrf_token(request: Request, call_next):
     response.headers["X-CSRF-Token"] = token
     return response
 
+
 app.include_router(auth.router)
 app.include_router(events.router)
 app.include_router(booking.router)
+app.include_router(profile.router)
 
 
 @app.on_event("startup")
 async def on_startup():
     await init_db()
+    scheduler = AsyncIOScheduler()
+    event_service = EventService(EventRepository(AsyncSessionLocal()))
+    scheduler.add_job(
+        event_service.generate_events,
+        "interval",
+        hours=24,
+        args=[10],
+    )
+    scheduler.start()
 
 
 if __name__ == "__main__":

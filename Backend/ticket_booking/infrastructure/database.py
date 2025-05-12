@@ -6,6 +6,7 @@ Base = declarative_base()
 engine = create_async_engine(settings.SQL_DATABASE_URL, echo=True)
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
+
 async def get_db():
     async with AsyncSessionLocal() as db:
         try:
@@ -14,6 +15,7 @@ async def get_db():
         except Exception:
             await db.rollback()
             raise
+
 
 async def init_db():
     async with engine.begin() as conn:

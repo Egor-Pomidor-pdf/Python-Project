@@ -13,10 +13,13 @@ router = APIRouter(prefix="/events", tags=["events"])
 
 
 @router.post("/generate-events", status_code=201)
-async def generate_events(db: AsyncSession = Depends(get_db)):
+async def generate_events(
+        count: int = 50,
+        db: AsyncSession = Depends(get_db)
+):
     event_repo = EventRepository(db)
     event_service = EventService(event_repo)
-    return await event_service.generate_events()
+    return await event_service.generate_events(count=count)
 
 
 @router.get("/filter")

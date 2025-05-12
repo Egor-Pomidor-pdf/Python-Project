@@ -36,12 +36,13 @@ class PaymentService:
 
         return True
 
-    async def process_booking(self, book_data: dict, payment_data: dict):
+    async def process_booking(self, book_data: dict, payment_data: dict, user_id: int):
         event = await self.event_repo.get_by_id(book_data['event_id'])
         total_cost = event.price * book_data['ticket_count']
 
         if not self.validate_payment(self, payment_data):
             await self.transaction_repo.create({
+                "user_id": user_id,
                 "event_id": event.id,
                 "amount": total_cost,
                 "status": "failed",
@@ -52,6 +53,7 @@ class PaymentService:
         success = random.random() < 0.95
         if not success:
             await self.transaction_repo.create({
+                "user_id": user_id,
                 "event_id": event.id,
                 "amount": total_cost,
                 "status": "failed",
@@ -61,6 +63,7 @@ class PaymentService:
 
         await self.event_repo.update_tickets(event.id, book_data['ticket_count'])
         transaction = await self.transaction_repo.create({
+            "user_id": user_id,
             "event_id": event.id,
             "amount": total_cost,
             "status": "completed",

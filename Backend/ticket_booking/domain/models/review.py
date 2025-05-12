@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from ticket_booking.infrastructure.database import Base
+from sqlalchemy.orm import relationship
+
 
 class Review(Base):
     __tablename__ = "reviews"
@@ -8,4 +10,4 @@ class Review(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     event_id = Column(Integer, ForeignKey("events.id"))
     comment = Column(String, nullable=True)
-    created_at = Column(String, nullable=True)  
+    created_at = Column(String, nullable=True)

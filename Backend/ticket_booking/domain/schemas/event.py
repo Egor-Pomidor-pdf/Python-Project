@@ -9,7 +9,7 @@ class EventCreate(BaseModel):
     genre: Optional[str] = None
     price: float
     available_tickets: int
-
+    description: Optional[str] = None
 
 class EventOut(BaseModel):
     id: int
@@ -19,6 +19,7 @@ class EventOut(BaseModel):
     genre: Optional[str] = None
     price: float
     available_tickets: int
+    description: Optional[str] = None
 
     class Config:
         from_attributes = True
