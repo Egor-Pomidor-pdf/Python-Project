@@ -167,18 +167,16 @@ class EventService:
         # Генерация описания, если оригинальное отсутствует
         name = event.get("name", "неизвестное мероприятие")
         genre = self._get_genre(event)
-        city = self._get_city(event)
+        city = self._get_city(event)  # Получаем город
         date = self._parse_event_date(event)
 
-        if genre != "Разное" and city != "Нет":
+        # Если жанр определён, используем его в описании
+        if genre != "Разное":
             return f"Уникальное мероприятие {genre} в городе {city} состоится {date}. Не упустите шанс посетить {name}!"
-        elif genre != "Разное":
-            return f"Интересное событие {genre} пройдет {date}. Подробности уточняйте на сайте!"
-        else:
-            return f"Мероприятие {name} пройдет {date} в неизвестном месте. Ожидайте анонсов!"
+        # Если жанр "Разное", всё равно указываем город
+        return f"Мероприятие {name} пройдет {date} в городе {city}. Ожидайте анонсов!"
 
         logger.warning(f"Описание не найдено и не сгенерировано для события: {event.get('name', 'Unknown Event')}")
-
         return "Нет описания"
 
     async def filter_events(self, filters: dict):
