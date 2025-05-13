@@ -1,80 +1,105 @@
-/* RegisterPage.module.css */
 
 .container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 2rem;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 200px;
-  }
-  
-  .title {
-    text-align: center;
-    color: #333;
-    margin-bottom: 1.5rem;
-    font-size: 1.8rem;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .input {
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-  }
-  
-  .input:focus {
-    outline: none;
-    border-color: #646cff;
-  }
-  
-  .label {
-    font-weight: 500;
-    color: #444;
-    margin-top: 0.5rem;
-  }
-  
-  .select {
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
-    font-size: 1rem;
-  }
-  
-  .option {
-    padding: 0.5rem;
-  }
-  
-  .option:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .hint {
-    color: #666;
-    font-size: 0.8rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .button {
-    padding: 0.8rem;
-    background-color: #646cff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .button:hover {
-    background-color: #535bf2;
-  }
+  width: 100%;
+  max-width: 400px;
+  margin-top: 225px; 
+  margin-left: auto;
+  margin-right: auto;
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1A1A1A;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputLabel {
+  font-size: 14px;
+  color: #350000;
+  font-weight: 500;
+}
+
+.input {
+  padding: 14px 16px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.2s;
+  background: #FAFAFA;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #1976D2;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+.divider {
+  height: 1px;
+  background: #fffffffd;
+  margin: 24px 0;
+}
+
+.submitButton {
+  padding: 14px;
+  background: #1976D2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitButton:hover {
+  background: #1565C0;
+}
+
+.loginPrompt {
+  text-align: center;
+  font-size: 14px;
+  color: #666666;
+  margin-top: 16px;
+}
+
+.loginLink {
+  color: #1976D2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.loginLink:hover {
+  text-decoration: underline;
+}
+body {
+  background: radial-gradient(circle at 35% 50%, #a6d1ff 0%, #8e7be7 40%, #c8b7e5 100%);
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+.pageBackground {
+  height: 100vh;
+  background: radial-gradient(circle, #a6d1ff 0%, #8e7be7 40%, #c8b7e5 100%);
+}
+
