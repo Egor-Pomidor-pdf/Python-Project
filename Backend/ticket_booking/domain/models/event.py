@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Boolean
 from ticket_booking.infrastructure.database import Base
 
 class Event(Base):
@@ -11,4 +11,5 @@ class Event(Base):
     genre = Column(String, nullable=True)
     price = Column(Float)
     available_tickets = Column(Integer)
+    is_archived = Column(Boolean, default=False)
     description = Column(String, nullable=True)
