@@ -21,6 +21,8 @@
 
 .navabar__logo__img {
   position: absolute;
+  top: -17%;
+  right: -6%;
 }
 
 .navabar__logo__title {
@@ -32,7 +34,7 @@
   font-size: 18px;
   color: rgba(0, 0, 0, 1);
   right: 15%;
-  top: 33%;
+  top: 5%;
 }
 
 .navabar__links__item {
@@ -48,14 +50,19 @@
 }
 
 .navabar__links__logAndReg {
-    display: flex;
-    gap: 30px;
+  display: flex;
+  gap: 30px;
 }
 
 .navabar__links__item_reg {
-    width: 205px;
+  width: 205px;
 }
 
 .navabar__links__item_log {
-    width: 115px;
+  width: 115px;
+}
+
+
+.navabar__links__item_post {
+  background-color: transparent; 
 }

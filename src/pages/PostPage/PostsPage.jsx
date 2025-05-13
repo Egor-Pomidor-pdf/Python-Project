@@ -22,7 +22,7 @@ const PostsPage = () => {
   //подгрузка постов на основе фильтра
   const fetchPosts = async () => {
     const response = await PostService.getAll();
-    const responseData = response.data;
+    const responseData = response.data.events;
     if (filter.sort || filter.query) {
       setPosts(selectAndSearchedPost(responseData));
     } else {
@@ -81,28 +81,3 @@ const PostsPage = () => {
 };
 
 export default PostsPage;
-
-{
-  /* <div className={cl.Filter__blotTitle}>
-        <div className={cl.Filter__blotTitle__Stars}>
-            <img src={FIlterStars}/>
-            <img src={pinStar}/>
-            <img className={`${cl.Filter__blotTitle__Blot} ${cl.Filter__blotTitle__Blot__Big}`} src={left}/>
-            <img src={pinStar}/>
-          </div>
-        
-          <img className={cl.Filter__blotTitle__Blot} src={left}/>
-          <h2 className={cl.Filter__blotTitle__title}>Мероприятия</h2>
-          <img className={cl.Filter__blotTitle__Blot} src={right}/>
-          
-          <div className={cl.Filter__blotTitle__Stars}>
-            <img src={pinStar}/>
-            
-            <img className={`${cl.Filter__blotTitle__Blot} ${cl.Filter__blotTitle__Blot__Big}`} src={right}/>
-            <img src={pinStar}/>
-            <img src={pinStar}/>
-          </div>
-
-        </div>
-         */
-}

@@ -1,0 +1,176 @@
+/* Основные стили контейнера */
+.eventContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 130px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+  }
+  
+  /* Стили для сообщения об ошибке */
+  .errorMessage {
+    text-align: center;
+    padding: 3rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 2rem;
+  }
+  
+  .errorMessage h2 {
+    color: #dc3545;
+    margin-bottom: 1rem;
+  }
+  
+  .homeLink {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #0066cc;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .homeLink:hover {
+    background-color: #004d99;
+  }
+  
+  /* Стили шапки события */
+  .eventHeader {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .eventTitle {
+    font-size: 2.5rem;
+    color: #222;
+    margin-bottom: 0.5rem;
+  }
+  
+  .eventSubtitle {
+    font-size: 1.2rem;
+    color: #666;
+    font-style: italic;
+  }
+  
+  /* Стили для изображения */
+  .eventImage {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Стили для деталей события */
+  .eventDetails {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    margin: 2rem 0;
+    grid-template-areas: "info des"
+    "rev rev";
+  }
+  
+  @media (max-width: 768px) {
+    .eventDetails {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Стили для информационной сетки */
+  .infoGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+   
+  }
+  
+  .infoItem {
+    background: #f8f9fa;
+    padding: 1.2rem;
+    border-radius: 6px;
+    border-left: 4px solid #0066cc;
+  }
+  
+  .infoLabel {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+  }
+  
+  .infoValue {
+    font-size: 1.1rem;
+  }
+  
+  /* Стили для описания */
+  .eventDescription {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 6px;
+     grid-area: des;
+  }
+  
+  .sectionTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #222;
+    border-bottom: 2px solid #0066cc;
+    padding-bottom: 0.5rem;
+    display: inline-block;
+  }
+  
+  .descriptionText {
+    line-height: 1.6;
+    font-size: 1.1rem;
+  }
+  
+  /* Стили для кнопки */
+  .eventActions {
+    text-align: center;
+    margin-top: 2rem;
+display: flex;
+justify-content: space-evenly;
+  }
+  
+  .buyButton {
+    background: #0066cc;
+    color: white;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .buyButton:hover {
+    background: #004d99;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .buyButton:active {
+    transform: translateY(0);
+  }
+
+
+/* отзывы */
+
+.eventReview {
+    grid-area: rev;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 6px;
+}
+
+.eventInfo {
+    grid-area: info;
+}

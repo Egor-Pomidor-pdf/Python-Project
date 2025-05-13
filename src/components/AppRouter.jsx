@@ -5,32 +5,45 @@ import PostsPage from "../pages/PostPage/PostsPage";
 import Login from "../pages/LoginPage";
 import { AuthContext } from "../context";
 import Loader from "../UI/Loader/Loader";
-import RegisterPage from "../pages/RegisterPage";
+import RegisterPage from "../pages/RegisterPage/RegisterPage";
 import BookingTicket from "../pages/BookingTicketPage";
 import TicketGoodPage from "../pages/TIcketGoodPage";
 import TicketBadPage from "../pages/TicketBadPage";
+import EventPage from "../pages/EventPage/EventPage";
+import LkPage from "../pages/LkPage/LkPage";
 
 const AppRouter = () => {
   const { isAuth, isLoading } = useContext(AuthContext);
   if (isLoading) {
     return <Loader />;
   }
-  return isAuth ? (
+
+
+  const authRoutes = [
+    { path: "/home", element: <HomePage /> },
+    { path: "/posts", element: <PostsPage /> },
+    { path: "/login", element: <Login /> },
+    { path: "/register", element: <RegisterPage /> },
+    { path: "/booking", element: <BookingTicket /> },
+    { path: "/ticketGood", element: <TicketGoodPage /> },
+    { path: "/ticketBad", element: <TicketBadPage /> },
+    { path: "/event/:id", element: <EventPage /> },
+    { path: "*", element: <Navigate to="/home" replace /> },
+    {path: "/lkabinet", element: <LkPage/>}
+  ]
+
+  const publicRoutes = [
+    { path: "/login", element: <Login /> },
+    { path: "/register", element: <RegisterPage /> },
+    { path: "*", element: <Navigate to="/home" replace /> }
+  ];
+
+
+  return (
     <Routes>
-      <Route path="/home" element={<HomePage />} />
-      <Route path="/posts" element={<PostsPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/booking" element={<BookingTicket/>}/>
-      <Route path="/ticketGood" element={<TicketGoodPage/>}/>
-      <Route path="/ticketBad" element={<TicketBadPage/>}/>
-      <Route path="*" element={<Navigate to="/home" replace />} />
-    </Routes>
-  ) : (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="*" element={<Navigate to="/home" replace />} />
+     {(isAuth ? authRoutes : publicRoutes).map((route, index) => (
+      <Route key={index} path={route.path} element={route.element}/>
+     ))}
     </Routes>
   );
 };
