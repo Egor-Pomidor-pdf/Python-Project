@@ -1,112 +1,121 @@
-/* Основной контейнер */
-.auth-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-    box-sizing: border-box;
-    color: white;
-    position: relative;
-  }
-  
-  /* Кнопка назад */
-  .back-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s;
-    backdrop-filter: blur(5px);
-  }
-  
-  .back-button:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateX(-3px);
-  }
-  
-  /* Логотип "6MO" */
-  .auth-logo {
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 40px;
-    color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Форма */
-  .auth-form {
-    width: 100%;
+/* Base styles */
+.register-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #6e8efb, #a777e3); /* Цветной градиентный фон */
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Синяя круглая кнопка (без текста, только иконка) */
+.home-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  background-color: #4a90e2; /* Синий цвет */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+  transition: all 0.3s;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.home-button:hover {
+  background-color: #3a7bc8;
+  transform: scale(1.05);
+}
+
+/* Form container */
+.register-container {
+  width: 100%;
+  max-width: 380px;
+  background: white;
+  padding: 35px 30px;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.register-title {
+  text-align: center;
+  color: #2d2d2d;
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Form elements */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.register-input {
+  width: 100%;
+  padding: 15px 20px;
+  border: 1px solid #d0d0d0;
+  border-radius: 25px; /* Круглые углы */
+  font-size: 16px;
+  transition: all 0.3s;
+  background-color: #f8f8f8;
+}
+
+.register-input:focus {
+  outline: none;
+  border-color: #a0c4e4;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(160, 196, 228, 0.2);
+}
+
+.register-button {
+  width: 100%;
+  padding: 15px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+  box-shadow: 0 2px 5px rgba(74, 144, 226, 0.2);
+}
+
+.register-button:hover {
+  background-color: #3a7bc8;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 25px;
+  color: #7a7a7a;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #4a90e2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register-container {
+    padding: 30px 25px;
     max-width: 320px;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 30px;
-    border-radius: 25px;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }
-  
-  .input-container {
-    margin-bottom: 25px;
-  }
-  
-  .input-label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
-  }
-  
-  /* Поле ввода */
-  .auth-input {
-    width: 100%;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 15px;
-    font-size: 16px;
-    outline: none;
-    box-sizing: border-box;
-    color: white;
-    transition: all 0.3s;
-  }
-  
-  .auth-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-  }
-  
-  .auth-input:focus {
-    border-color: rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.2);
-  }
-  
-  /* Кнопка */
-  .auth-button {
-    width: 100%;
-    padding: 15px;
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #667eea;
-    border: none;
-    border-radius: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-top: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .auth-button:hover {
-    background-color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-  }
+}
