@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, func
 from ticket_booking.domain.schemas.event import EventCreate
 from ticket_booking.domain.models.event import Event
-from ticket_booking.domain.models.rating import Rating
+from ticket_booking.domain.models.rating import RatingOut
 from ticket_booking.domain.models.review import Review
 from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
 
@@ -24,12 +24,14 @@ class EventRepository:
             raise EventNotFoundException()
         return event
 
-    async def filter_events(self, filters: dict):
-        query = select(Event).join(
-            Rating,
-            (Event.id == Rating.event_id),
-            isouter=True
+    async def get_by_name_and_date(self, name: str, date: str):
+        result = await self.session.execute(
+            select(Event).where(Event.name == name, Event.date == date)
         )
+        return result.scalar_one_or_none()
+
+    async def filter_events(self, filters: dict):
+        query = select(Event)
 
         if filters.get('name'):
             query = query.where(Event.name.ilike(f"%{filters['name']}%"))
@@ -45,33 +47,39 @@ class EventRepository:
             query = query.where(Event.price >= filters['price_min'])
         if filters.get('price_max') is not None:
             query = query.where(Event.price <= filters['price_max'])
+
         if filters.get('min_rating') is not None:
             subquery = select(
                 Event.id,
-                func.avg(Rating.score).label("avg_rating")
+                func.avg(RatingOut.score).label("avg_rating")
             ).join(
-                Rating,
-                Event.id == Rating.event_id,
+                RatingOut,
+                Event.id == RatingOut.event_id,
                 isouter=True
             ).group_by(Event.id).subquery()
-            query = query.join(subquery, Event.id == subquery.c.id).where(
-                subquery.c.avg_rating >= filters['min_rating'])
+            query = query.join(subquery, Event.id == subquery.c.id, isouter=True).where(
+                (subquery.c.avg_rating >= filters['min_rating']) | (subquery.c.avg_rating.is_(None))
+            )
 
         count_query = select(func.count()).select_from(query.subquery())
         total_count = (await self.session.execute(count_query)).scalar()
 
         page = filters.get('page', 1)
         page_size = filters.get('page_size', 10)
-        query = query.offset((page - 1) * page_size).limit(page_size)
+        query = query.distinct().offset((page - 1) * page_size).limit(page_size)
 
         result = await self.session.execute(query)
         events = result.scalars().all()
 
         event_ratings = {}
-        for event in events:
-            rating_query = select(func.avg(Rating.score)).where(Rating.event_id == event.id)
-            avg_rating = (await self.session.execute(rating_query)).scalar() or 0
-            event_ratings[event.id] = avg_rating
+        rating_subquery = select(
+            RatingOut.event_id,
+            func.avg(RatingOut.score).label("avg_rating")
+        ).group_by(RatingOut.event_id).subquery()
+
+        rating_result = await self.session.execute(select(rating_subquery.c.event_id, rating_subquery.c.avg_rating))
+        for event_id, avg_rating in rating_result:
+            event_ratings[event_id] = avg_rating or 0
 
         return {
             "events": events,
@@ -83,14 +91,15 @@ class EventRepository:
 
     async def update_tickets(self, event_id: int, ticket_count: int):
         event = await self.get_by_id(event_id)
-        if event.available_tickets < ticket_count:
-            raise NotEnoughTicketsException(f"Только {event.available_tickets} билетов осталось")
-        event.available_tickets -= ticket_count
+        new_ticket_count = event.available_tickets - ticket_count
+        if new_ticket_count < 0:
+            raise NotEnoughTicketsException(f"Осталось только {event.available_tickets} билетов")
+        event.available_tickets = new_ticket_count
         await self.session.flush()
         return event
 
     async def add_rating(self, user_id: int, event_id: int, score: float):
-        rating = Rating(user_id=user_id, event_id=event_id, score=score)
+        rating = RatingOut(user_id=user_id, event_id=event_id, score=score)
         self.session.add(rating)
         await self.session.flush()
         return rating
@@ -105,6 +114,18 @@ class EventRepository:
 
     async def get_reviews(self, event_id: int):
         result = await self.session.execute(select(Review).where(Review.event_id == event_id))
+        return result.scalars().all()
+
+    async def get_reviews_by_user(self, user_id: int):
+        result = await self.session.execute(select(Review).where(Review.user_id == user_id))
+        return result.scalars().all()
+
+    async def get_ratings_by_user(self, user_id: int):
+        result = await self.session.execute(select(RatingOut).where(RatingOut.user_id == user_id))
+        return result.scalars().all()
+
+    async def get_ratings_by_event(self, event_id: int):
+        result = await self.session.execute(select(RatingOut).where(RatingOut.event_id == event_id))
         return result.scalars().all()
     
     async def archive_event(self, event_id: int):

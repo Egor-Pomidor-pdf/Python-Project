@@ -12,3 +12,4 @@ class Event(Base):
     price = Column(Float)
     available_tickets = Column(Integer)
     is_archived = Column(Boolean, default=False)
+    description = Column(String, nullable=True)

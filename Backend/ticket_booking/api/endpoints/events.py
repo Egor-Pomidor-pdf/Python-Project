@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from jose import JWTError, jwt
 from ticket_booking.domain.schemas.event import EventFilter
 from ticket_booking.domain.schemas.rating import RatingOut, ReviewCreate, ReviewOut
 from ticket_booking.domain.schemas.event import EventFilter, EventCreate
@@ -9,15 +10,20 @@ from ticket_booking.infrastructure.database import get_db
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from ticket_booking.infrastructure.auth import get_current_user
+from ticket_booking.core.config import settings
+from ticket_booking.core.security import oauth2_scheme
 
 router = APIRouter(prefix="/events", tags=["events"])
 
 
 @router.post("/generate-events", status_code=201)
-async def generate_events(db: AsyncSession = Depends(get_db)):
+async def generate_events(
+        count: int = 50,
+        db: AsyncSession = Depends(get_db)
+):
     event_repo = EventRepository(db)
     event_service = EventService(event_repo)
-    return await event_service.generate_events()
+    return await event_service.generate_events(count=count)
 
 
 @router.get("/filter")
@@ -35,8 +41,17 @@ async def rate_event(
         user_id: int,
         event_id: int,
         score: float,
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_db),
+        token: str = Depends(oauth2_scheme)
 ):
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        username = payload.get("sub")
+        if not username:
+            raise HTTPException(status_code=401, detail="Неверный токен")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Неверный токен")
+
     event_repo = EventRepository(db)
     event_service = EventService(event_repo)
     try:
@@ -50,8 +65,17 @@ async def rate_event(
 async def add_review(
         user_id: int,
         review_data: ReviewCreate,
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_db),
+        token: str = Depends(oauth2_scheme)
 ):
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        username = payload.get("sub")
+        if not username:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
     event_repo = EventRepository(db)
     event_service = EventService(event_repo)
     try:

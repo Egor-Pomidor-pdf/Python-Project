@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.types import JSON
 from ticket_booking.infrastructure.database import Base
 
+
 class User(Base):
     __tablename__ = "users"
 

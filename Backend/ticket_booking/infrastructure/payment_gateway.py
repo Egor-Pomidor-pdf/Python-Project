@@ -24,7 +24,6 @@ class PaymentGateway:
     def process_payment(payment_data: RequestPayment, amount: float) -> bool:
         try:
             return random.random() < 0.95
-
         except Exception as e:
             raise PaymentValidationException(f"Ошибка обработки платежа: {str(e)}")
 

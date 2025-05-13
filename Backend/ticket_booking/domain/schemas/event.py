@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 
+
 class EventCreate(BaseModel):
     name: str
     date: str
@@ -9,6 +10,7 @@ class EventCreate(BaseModel):
     price: float
     available_tickets: int
     is_archived: bool = False
+    description: Optional[str] = None
 
 class EventOut(BaseModel):
     id: int
@@ -18,9 +20,11 @@ class EventOut(BaseModel):
     genre: Optional[str] = None
     price: float
     available_tickets: int
+    description: Optional[str] = None
 
     class Config:
         from_attributes = True
+
 
 class EventFilter(BaseModel):
     name: Optional[str] = None
@@ -33,6 +37,7 @@ class EventFilter(BaseModel):
     price_max: Optional[float] = None
     page: int = Field(1, ge=1, description="Номер страницы")
     page_size: int = Field(10, ge=1, le=100, description="Количество элементов на странице")
+
 
 class BookTicketRequest(BaseModel):
     event_id: int
