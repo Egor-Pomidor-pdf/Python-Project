@@ -8,6 +8,7 @@ class EventCreate(BaseModel):
     genre: Optional[str] = None
     price: float
     available_tickets: int
+    is_archived: bool = False
 
 class EventOut(BaseModel):
     id: int

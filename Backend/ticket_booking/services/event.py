@@ -1,7 +1,11 @@
 from faker import Faker
 import random
+from ticket_booking.domain.schemas.event import EventCreate
+from fastapi import HTTPException, status
 from ticket_booking.domain.repositories.event import EventRepository
 from ticket_booking.domain.schemas.rating import ReviewOut
+from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
+
 
 
 class EventService:
@@ -64,3 +68,32 @@ class EventService:
         reviews = await self.event_repo.get_reviews(event_id)
         return [ReviewOut(id=review.id, user_id=review.user_id, event_id=review.event_id, comment=review.comment,
                           created_at=review.created_at) for review in reviews]
+
+    
+    async def archive_event(self, event_id: int):
+        event = await self.event_repo.archive_event(event_id)
+        
+        if not event:
+            raise EventNotFoundException()
+        
+        return {
+            "id": event.id,
+            "name": event.name,
+            "date": event.date,
+            "city": event.city,
+            "price": event.price,
+            "available_tickets": event.available_tickets,
+            "is_archived": event.is_archived
+        }
+        
+    async def delete_event(self, event_id: int):
+        try:
+            await self.event_repo.delete_event(event_id)
+        except Exception:
+            raise EventNotFoundException()
+        
+    async def create_event(self, event_data: EventCreate):
+        try:
+            return await self.event_repo.create_event(event_data)
+        except Exception:
+            raise EventNotFoundException()
