@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.types import JSON
 from ticket_booking.infrastructure.database import Base
 
@@ -15,3 +15,4 @@ class User(Base):
     phone_number = Column(String, unique=True)
     password_hash = Column(String)
     preferences = Column(JSON, nullable=True)
+    is_specialist = Column(Boolean, default=False)

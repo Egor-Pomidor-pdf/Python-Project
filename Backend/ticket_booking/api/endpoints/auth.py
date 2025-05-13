@@ -5,7 +5,7 @@ from ticket_booking.core.security import create_access_token, verify_password
 from ticket_booking.core.exceptions import InvalidCredentialsException
 from ticket_booking.domain.repositories.user import UserRepository
 from ticket_booking.domain.repositories.specialist import SpecialistRepository
-from ticket_booking.domain.models.specialist import Specialist
+from ticket_booking.domain.schemas.user import Register_specialist
 from ticket_booking.services.specialist import SpecialistService
 from ticket_booking.infrastructure.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,7 +26,7 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     
 
 @router.post('/register-specialist', status_code=status.HTTP_201_CREATED)
-async def register_specialist(specialist, db: AsyncSession = Depends(get_db)):
+async def register_specialist(specialist: Register_specialist, db: AsyncSession = Depends(get_db)):
     sr = SpecialistRepository(db)
     ads = SpecialistService(sr)
 
@@ -45,18 +45,19 @@ async def login(from_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
         user = await user_repo.authenticate(from_data.username)
         if not user or not verify_password(from_data.password, user.password_hash, user.username):
             raise InvalidCredentialsException("Неверный логи или пароль")
-        access_token = create_access_token({"sub": user.username})
+        access_token = create_access_token({"sub": user.username, "rights": user.is_specialist})
 
-        if specialist_repo.is_specialist(user.username):
+        if await specialist_repo.is_specialist(user.username):
             return {
                 "access_token": access_token,
                 "token_type": "bearer",
                 "message": "Вход выполнен успешно, специалист"
             }
+        
         return {
             "access_token": access_token,
             "token_type": "bearer",
-            "message": "Вход выполнен успешно, специалист"
+            "message": "Вход выполнен успешно"
         }
     
     except Exception as e:

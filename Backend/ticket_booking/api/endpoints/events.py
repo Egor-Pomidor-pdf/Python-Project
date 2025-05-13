@@ -4,6 +4,7 @@ from ticket_booking.domain.schemas.event import EventFilter
 from ticket_booking.domain.schemas.rating import RatingOut, ReviewCreate, ReviewOut
 from ticket_booking.domain.schemas.event import EventFilter, EventCreate
 from ticket_booking.services.event import EventService
+from ticket_booking.services.specialist import SpecialistService
 from ticket_booking.domain.repositories.event import EventRepository
 from ticket_booking.domain.repositories.specialist import SpecialistRepository
 from ticket_booking.infrastructure.database import get_db
@@ -105,9 +106,10 @@ async def archive_event(event_id: int, db: AsyncSession = Depends(get_db), paylo
     event_service = EventService(event_repo)
 
     try:
-        username = payload.get("username")
-        special_repo = SpecialistRepository()
-        is_specialist = special_repo.is_specialist(username)
+        username = payload.get("sub")
+        special_repo = SpecialistRepository(db)
+        special_service = SpecialistService(special_repo)
+        is_specialist = await special_repo.is_specialist(username)
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     
@@ -130,9 +132,10 @@ async def delete_event(event_id: int, db: AsyncSession = Depends(get_db), payloa
     event_service = EventService(event_repo)
 
     try:
-        username = payload.get("username")
-        special_repo = SpecialistRepository()
-        is_specialist = special_repo.is_specialist(username)
+        username = payload.get("sub")
+        special_repo = SpecialistRepository(db)
+        special_service = SpecialistService(special_repo)
+        is_specialist = await special_repo.is_specialist(username)
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     
@@ -154,9 +157,10 @@ async def create_event(event_data: EventCreate, db: AsyncSession = Depends(get_d
     event_service = EventService(event_repo)
 
     try:
-        username = payload.get("username")
-        special_repo = SpecialistRepository()
-        is_specialist = special_repo.is_specialist(username)
+        username = payload.get("sub")
+        special_repo = SpecialistRepository(db)
+        special_service = SpecialistService(special_repo)
+        is_specialist = await special_repo.is_specialist(username)
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     
