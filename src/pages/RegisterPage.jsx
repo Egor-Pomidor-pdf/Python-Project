@@ -8,7 +8,6 @@ const AuthPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Обработка отправки номера
     console.log("Номер отправлен:", phoneNumber);
     setPhoneNumber("");
   };
