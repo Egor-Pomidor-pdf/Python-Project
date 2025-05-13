@@ -1,4 +1,6 @@
 from pydantic import BaseModel, Field
+from typing import Optional
+
 
 class RatingOut(BaseModel):
     id: int
@@ -9,9 +11,11 @@ class RatingOut(BaseModel):
     class Config:
         from_attributes = True
 
+
 class ReviewCreate(BaseModel):
     event_id: int
     comment: str
+
 
 class ReviewOut(BaseModel):
     id: int
@@ -19,6 +23,7 @@ class ReviewOut(BaseModel):
     event_id: int
     comment: str
     created_at: str
+    score: Optional[float] = None
 
     class Config:
         from_attributes = True

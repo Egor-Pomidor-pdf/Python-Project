@@ -11,3 +11,4 @@ class Event(Base):
     genre = Column(String, nullable=True)
     price = Column(Float)
     available_tickets = Column(Integer)
+    description = Column(String, nullable=True)
