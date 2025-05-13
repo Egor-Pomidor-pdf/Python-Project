@@ -5,6 +5,8 @@ from ticket_booking.core.security import create_access_token, verify_password
 from ticket_booking.core.exceptions import InvalidCredentialsException
 from ticket_booking.domain.repositories.user import UserRepository
 from ticket_booking.domain.repositories.specialist import SpecialistRepository
+from ticket_booking.domain.models.specialist import Specialist
+from ticket_booking.services.specialist import SpecialistService
 from ticket_booking.infrastructure.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.security import OAuth2PasswordRequestForm
@@ -19,6 +21,18 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
         specialist_repo = SpecialistRepository(db)
         auth_service = AuthService(user_repo, specialist_repo)
         return await auth_service.register_user(user.dict())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+
+@router.post('/register-specialist', status_code=status.HTTP_201_CREATED)
+async def register_specialist(specialist, db: AsyncSession = Depends(get_db)):
+    sr = SpecialistRepository(db)
+    ads = SpecialistService(sr)
+
+    try:
+        await ads.register_specialist(name=specialist.username, role=specialist.role)
+        return 201
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
