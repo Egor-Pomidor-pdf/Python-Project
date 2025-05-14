@@ -16,6 +16,8 @@ const PostWithTitle = ({ posts, title }) => {
             price={p.price}
             available_tickets={p.available_tickets}
             tit={p.title}
+            description={p.description}
+            average_rating={p.average_rating}
           />
         );
       }

@@ -21,6 +21,8 @@ const Post = ({
   price,
   available_tickets,
   tit,
+  description,
+  average_rating
 }) => {
   return (
     <div className={cl.post}>
@@ -29,10 +31,7 @@ const Post = ({
       <div className={cl.post__content}>
         <h2 className={cl.post__title}>{name}</h2>
         <p className={cl.post__desc}>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolores,
-          culpa porro. Voluptatem dolor aliquam quam qui modi, unde accusamus
-          dolorem est, possimus, doloremque iste maiores ipsum aspernatur
-          dignissimos vel suscipit.
+          {description}
         </p>
         <div className={cl.post__block}>
           <div className={cl.post__block__item}>
@@ -55,6 +54,11 @@ const Post = ({
               <p>{available_tickets}</p>
             </MyTooltip>
           </div>
+          <div className={cl.post__block__item}>
+            <MyTooltip text={"оценка"}>
+              <p>{average_rating}</p>
+            </MyTooltip>
+          </div>
           <Link
             to={`/event/${id}`}
             state={{
@@ -65,7 +69,9 @@ const Post = ({
               city,
               price,
               available_tickets,
-              tit
+              tit,
+              description,
+              average_rating,
             }}>
             <MyBytton className={cl.post__btn} >Купить Билет</MyBytton>
           </Link>

@@ -12,6 +12,7 @@ import cl from "./PostPage.module.css";
 const PostsPage = () => {
   const [posts, setPosts] = useState([{}, {}, {}, {}]);
   const [filter, setFilter] = useState({ sort: "", query: "" });
+  
 
   //первоначальная подгрузка постов
 

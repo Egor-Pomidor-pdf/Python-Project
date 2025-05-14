@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import PostsPage from "../pages/PostPage/PostsPage";
-import Login from "../pages/LoginPage";
 import { AuthContext } from "../context";
 import Loader from "../UI/Loader/Loader";
 import RegisterPage from "../pages/RegisterPage/RegisterPage";
@@ -11,6 +10,7 @@ import TicketGoodPage from "../pages/TIcketGoodPage";
 import TicketBadPage from "../pages/TicketBadPage";
 import EventPage from "../pages/EventPage/EventPage";
 import LkPage from "../pages/LkPage/LkPage";
+import Login from "../pages/LoginPage/LoginPage";
 
 const AppRouter = () => {
   const { isAuth, isLoading } = useContext(AuthContext);

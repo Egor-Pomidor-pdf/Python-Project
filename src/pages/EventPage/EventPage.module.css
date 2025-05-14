@@ -174,3 +174,161 @@ justify-content: space-evenly;
 .eventInfo {
     grid-area: info;
 }
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modalFormGroup {
+    margin: 15px 0;
+}
+
+.modalInput {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modalPrice {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.modalConfirmButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modalCancelButton {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
+.notification {
+    padding: 1rem;
+    background-color: #3d6896;
+    color: white;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    animation: fadeIn 0.3s;
+  }
+
+
+  /* Reviews Section */
+.eventReview {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reviewList {
+    margin-top: 1.5rem;
+}
+
+.reviewItem {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.reviewItem:hover {
+    transform: translateY(-2px);
+}
+
+.reviewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.reviewAuthor {
+    font-weight: 600;
+    color: #333;
+}
+
+.reviewDate {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.reviewContent {
+    color: #495057;
+    line-height: 1.5;
+}
+
+.noReviews {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Add Review Button */
+.addReviewButton {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.addReviewButton:hover {
+    background-color: #0069d9;
+}
+
+/* Review Form (можно добавить позже) */
+.reviewForm {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+  
