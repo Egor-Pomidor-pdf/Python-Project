@@ -5,7 +5,7 @@ const PostWithTitle = ({ posts, title }) => {
   return (
     <div>
       <h1>{title}</h1>
-      {posts.map((p, i) => {while(i < 10) {
+      {posts.map((p, i) => { {
         
         return (
           <Post

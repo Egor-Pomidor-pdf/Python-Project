@@ -7,52 +7,88 @@ import BookingTicket from "../BookingTicketPage";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Neo from "./image/HomeNeoZone.svg";
 import cl from "./PostPage.module.css";
+import axios from "axios";
 
 
 const PostsPage = () => {
-  const [posts, setPosts] = useState([{}, {}, {}, {}]);
-  const [filter, setFilter] = useState({ sort: "", query: "" });
-  
+  const [filters, setFilters] = useState({
+    name: '',
+    date_from: '',
+    date_to: '',
+    city: '',
+    genre: '',
+    min_rating: '',
+    price_min: '',
+    price_max: ''
+  });
+  const [priceRange, setPriceRange] = useState([0, 10000]); // Для ползунка
+  const [posts, setPosts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
-  //первоначальная подгрузка постов
+
+  const getRequestParams = () => {
+    const params = {
+      page: currentPage,
+      page_size: pageSize
+    };
+
+    // Добавляем только заполненные фильтры
+    if (filters.name) params.name = filters.name;
+    if (filters.date_from) params.date_from = filters.date_from;
+    if (filters.date_to) params.date_to = filters.date_to;
+    if (filters.city) params.city = filters.city;
+    if (filters.genre) params.genre = filters.genre;
+    if (filters.min_rating) params.min_rating = filters.min_rating;
+    if (filters.price_min) params.price_min = filters.price_min;
+    if (filters.price_max) params.price_max = filters.price_max;
+    return params;
+  };
+
+
 
   useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const params = getRequestParams();
+        const response = await axios.get('/events/filter', { params });
+
+        setPosts(response.data.events);
+        setTotalPages(response.data.total_pages);
+      } catch (error) {
+        console.error('Ошибка загрузки:', error);
+      }
+    };
+
     fetchPosts();
-  }, [filter]);
+  }, [currentPage, pageSize, filters]);
 
-  //подгрузка постов на основе фильтра
-  const fetchPosts = async () => {
-    const response = await PostService.getAll();
-    const responseData = response.data.events;
-    if (filter.sort || filter.query) {
-      setPosts(selectAndSearchedPost(responseData));
-    } else {
-      setPosts([...responseData]);
-    }
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+    setCurrentPage(1);
   };
 
-  //функции, реализующие фильтровку
-  const selectPost = (posts) => {
-    let s = [];
-    if (filter.sort === "price") {
-      s = [...posts].sort((a, b) => a[filter.sort] - b[filter.sort]);
-    } else if (filter.sort === "") {
-      s = [...posts];
-    } else {
-      s = [...posts].sort((a, b) =>
-        a[filter.sort].localeCompare(b[filter.sort])
-      );
-    }
-    return s;
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
-  const selectAndSearchedPost = (posts) => {
-    return selectPost(posts).filter((post) =>
-      post.name.toUpperCase().includes(filter.query.toUpperCase())
-    );
+  // Сброс фильтров
+  const resetFilters = () => {
+    setFilters({
+      name: '',
+      date_from: '',
+      date_to: '',
+      city: '',
+      genre: '',
+      min_rating: '',
+      price_min: '',
+      price_max: ''
+    });
   };
 
-  //рендер функции
   return (
     <div className="App">
       <div className="Post">
@@ -66,11 +102,100 @@ const PostsPage = () => {
 
         {/* фильтр и заголовок "мероприятия" */}
         <section className={cl.Filter}>
-          <Filter
-            styleForFilter={cl.Filter__SearchAndSelect}
-            filter={filter}
-            setFilter={setFilter}
-          />
+          <div>
+            <div className={cl.filters}>
+              <input
+                type="text"
+                name="name"
+                placeholder="Название"
+                value={filters.name}
+                onChange={handleFilterChange}
+              />
+
+              <input
+                type="text"
+                name="city"
+                placeholder="Город"
+                value={filters.city}
+                onChange={handleFilterChange}
+              />
+
+              {/* Поля для цены */}
+              <div className={cl.priceFilter}>
+                <input
+                  type="number"
+                  name="price_min"
+                  placeholder="Цена от"
+                  value={filters.price_min}
+                  onChange={handleFilterChange}
+                  min="0"
+                />
+
+                <input
+                  type="number"
+                  name="price_max"
+                  placeholder="Цена до"
+                  value={filters.price_max}
+                  onChange={handleFilterChange}
+                  min="0"
+                />
+              </div>
+
+              {/* Другие фильтры */}
+              <input
+                type="date"
+                name="date_from"
+                value={filters.date_from}
+                onChange={handleFilterChange}
+                placeholder="Дата от"
+              />
+
+              <input
+                type="date"
+                name="date_to"
+                value={filters.date_to}
+                onChange={handleFilterChange}
+                placeholder="Дата до"
+              />
+
+              <select
+                name="genre"
+                value={filters.genre}
+                onChange={handleFilterChange}
+              >
+                <option value="">Все жанры</option>
+                <option value="rock">Рок</option>
+                <option value="pop">Поп</option>
+                <option value="jazz">Джаз</option>
+              </select>
+
+              <button onClick={resetFilters} className={cl.resetButton}>
+                Сбросить фильтры
+              </button>
+            </div>
+            <label>
+              Элементов на странице:
+              <select value={pageSize} onChange={handlePageChange}>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="pagination">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                disabled={page === currentPage}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
           <h3 className={cl.Filter__blotTitle__title}>Мероприятия</h3>
         </section>
 
