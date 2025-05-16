@@ -1,14 +1,16 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from ticket_booking.domain.models.event import Event
-from ticket_booking.domain.models.rating import RatingOut
+from ticket_booking.domain.models.rating import Rating
 from ticket_booking.domain.models.review import Review
 from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
+from datetime import datetime
 
 
 class EventRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
+        self.model = Event
 
     async def create(self, event_data: dict):
         event = Event(**event_data)
@@ -50,10 +52,10 @@ class EventRepository:
         if filters.get('min_rating') is not None:
             subquery = select(
                 Event.id,
-                func.avg(RatingOut.score).label("avg_rating")
+                func.avg(Rating.score).label("avg_rating")
             ).join(
-                RatingOut,
-                Event.id == RatingOut.event_id,
+                Rating,
+                Event.id == Rating.event_id,
                 isouter=True
             ).group_by(Event.id).subquery()
             query = query.join(subquery, Event.id == subquery.c.id, isouter=True).where(
@@ -72,9 +74,9 @@ class EventRepository:
 
         event_ratings = {}
         rating_subquery = select(
-            RatingOut.event_id,
-            func.avg(RatingOut.score).label("avg_rating")
-        ).group_by(RatingOut.event_id).subquery()
+            Rating.event_id,
+            func.avg(Rating.score).label("avg_rating")
+        ).group_by(Rating.event_id).subquery()
 
         rating_result = await self.session.execute(select(rating_subquery.c.event_id, rating_subquery.c.avg_rating))
         for event_id, avg_rating in rating_result:
@@ -97,16 +99,20 @@ class EventRepository:
         await self.session.flush()
         return event
 
-    async def add_rating(self, user_id: int, event_id: int, score: float):
-        rating = RatingOut(user_id=user_id, event_id=event_id, score=score)
+    async def add_rating(self, user_id: int, event_id: int, score: float, username: str):
+        rating = Rating(user_id=user_id, event_id=event_id, score=score, username=username)
         self.session.add(rating)
         await self.session.flush()
         return rating
 
-    async def add_review(self, user_id: int, event_id: int, comment: str):
-        from datetime import datetime
-        review = Review(user_id=user_id, event_id=event_id, comment=comment,
-                        created_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    async def add_review(self, user_id: int, event_id: int, comment: str, username: str):
+        review = Review(
+            user_id=user_id,
+            event_id=event_id,
+            comment=comment,
+            username=username,
+            created_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        )
         self.session.add(review)
         await self.session.flush()
         return review
@@ -120,9 +126,9 @@ class EventRepository:
         return result.scalars().all()
 
     async def get_ratings_by_user(self, user_id: int):
-        result = await self.session.execute(select(RatingOut).where(RatingOut.user_id == user_id))
+        result = await self.session.execute(select(Rating).where(Rating.user_id == user_id))
         return result.scalars().all()
 
     async def get_ratings_by_event(self, event_id: int):
-        result = await self.session.execute(select(RatingOut).where(RatingOut.event_id == event_id))
+        result = await self.session.execute(select(Rating).where(Rating.event_id == event_id))
         return result.scalars().all()

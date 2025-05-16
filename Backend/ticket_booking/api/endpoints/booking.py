@@ -4,6 +4,8 @@ from ticket_booking.core.config import settings
 from ticket_booking.core.security import oauth2_scheme
 from ticket_booking.domain.schemas.event import BookTicketRequest
 from ticket_booking.domain.repositories.user import UserRepository
+from ticket_booking.domain.repositories.notification import NotificationRepository
+from ticket_booking.services.notification import NotificationService
 from ticket_booking.domain.schemas.transaction import RequestPayment
 from ticket_booking.services.payment import PaymentService
 from ticket_booking.domain.repositories.event import EventRepository
@@ -14,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter(prefix="/booking", tags=["booking"])
 
 
+# api/endpoints/booking.py
 @router.post("/book-ticket")
 async def book_ticket(
         book_data: BookTicketRequest,
@@ -37,12 +40,19 @@ async def book_ticket(
         event_repo = EventRepository(db)
         transaction_repo = TransactionRepository(db)
         payment_service = PaymentService(event_repo, transaction_repo)
+        notification_repo = NotificationRepository(db)
+        notification_service = NotificationService(notification_repo, event_repo, user_repo, db)
 
-        return await payment_service.process_booking(
+        result = await payment_service.process_booking(
             book_data.dict(),
             payment_data.dict(),
             user_id=user_id
         )
+
+        # Отправляем уведомление о покупке
+        await notification_service.create_purchase_notification(user_id, book_data.event_id)
+
+        return result
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
     except Exception as e:

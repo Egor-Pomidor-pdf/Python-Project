@@ -32,6 +32,7 @@ class AuthService:
             raise InvalidCredentialsException("Неверный логин или пароль")
 
         return {
+            "user_id": user.id,
             "message": "Вход выполнен успешно",
             "access_token": create_access_token({"sub": user.username}),
             "token_type": "bearer"

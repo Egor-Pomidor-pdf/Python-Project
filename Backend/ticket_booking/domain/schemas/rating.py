@@ -4,6 +4,7 @@ from typing import Optional
 
 class RatingOut(BaseModel):
     id: int
+    username: str
     user_id: int
     event_id: int
     score: float = Field(..., ge=1, le=10)
@@ -19,6 +20,7 @@ class ReviewCreate(BaseModel):
 
 class ReviewOut(BaseModel):
     id: int
+    username: str
     user_id: int
     event_id: int
     comment: str

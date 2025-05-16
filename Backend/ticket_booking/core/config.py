@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
     SQL_DATABASE_URL: str = "sqlite+aiosqlite:///./ticket_booking.db"
     GLOBAL_SALT: str = os.getenv("GLOBAL_SALT", "default_salt_if_not_set")
-    TICKETMASTER_API_KEY: str = os.getenv("TICKETMASTER_API_KEY", "bsZxsmrvzuTWwFlVRicKg7VbHjKwMzHe")
+    TICKETMASTER_API_KEY: str = os.getenv("TICKETMASTER_API_KEY", "8YJblIqOcZ5rpgAtqZCAAUM5zji6RGaN")
 
 
 settings = Settings()
