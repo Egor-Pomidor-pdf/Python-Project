@@ -36,8 +36,3 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     phone_number: Optional[str] = None
     preferences: Optional[List[str]] = None
-
-
-class Register_specialist(BaseModel):
-    username: str
-    role: str
