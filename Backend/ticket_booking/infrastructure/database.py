@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from ticket_booking.core.config import settings
 
 Base = declarative_base()
-engine = create_async_engine(settings.SQL_DATABASE_URL, echo=True)
+engine = create_async_engine(settings.SQL_DATABASE_URL, echo=False)
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
