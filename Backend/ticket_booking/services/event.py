@@ -1,11 +1,15 @@
 import httpx
 import logging
 from datetime import datetime, timedelta
+from ticket_booking.domain.schemas.event import EventCreate
+from fastapi import HTTPException, status
 from ticket_booking.domain.repositories.event import EventRepository
 from ticket_booking.core.config import settings
 import random
 import asyncio
 from ticket_booking.domain.schemas.rating import ReviewOut
+from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -235,3 +239,34 @@ class EventService:
                 )
             )
         return review_outs
+
+    
+    async def archive_event(self, event_id: int):
+        event = await self.event_repo.archive_event(event_id)
+        
+        if not event:
+            raise EventNotFoundException()
+        
+        return {
+            "id": event.id,
+            "name": event.name,
+            "date": event.date,
+            "city": event.city,
+            "genre": event.genre,
+            "price": event.price,
+            "available_tickets": event.available_tickets,
+            "is_archived": event.is_archived,
+            "description": event.description
+        }
+        
+    async def delete_event(self, event_id: int):
+        try:
+            await self.event_repo.delete_event(event_id)
+        except Exception:
+            raise EventNotFoundException()
+        
+    async def create_event(self, event_data: EventCreate):
+        try:
+            return await self.event_repo.create_event(event_data)
+        except Exception:
+            raise EventNotFoundException()

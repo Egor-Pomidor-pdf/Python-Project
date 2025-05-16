@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from ticket_booking.infrastructure.database import Base
-from sqlalchemy.orm import relationship
 
 
 class Review(Base):
