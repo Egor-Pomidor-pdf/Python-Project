@@ -145,12 +145,7 @@ class EventRepository:
         
         try:
             await self.session.delete(event)
-            await self.session.commit()
-            """Переписывание primary key невозможно"""
-            # remaining_events = await self.session.execute(select(Event).order_by(Event.id))
-            # remaining_events = remaining_events.scalars().all()
-            # for new_id, event in enumerate(remaining_events, start=1):
-            #     event.id = new_id
+            await self.session.flush()
         except Exception:
             raise EventNotFoundException()
         

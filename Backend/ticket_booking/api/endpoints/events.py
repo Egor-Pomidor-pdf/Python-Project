@@ -142,7 +142,7 @@ async def delete_event(event_id: int, db: AsyncSession = Depends(get_db), payloa
     if is_specialist:
         try:
             await event_service.delete_event(event_id)
-            raise HTTPException(status_code=200, detail="Мероприятие было успешно удалено")
+            return HTTPException(status_code=200, detail="Мероприятие было успешно удалено")
         except Exception:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND,
