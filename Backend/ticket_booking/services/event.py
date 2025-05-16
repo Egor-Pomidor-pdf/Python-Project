@@ -252,9 +252,11 @@ class EventService:
             "name": event.name,
             "date": event.date,
             "city": event.city,
+            "genre": event.genre,
             "price": event.price,
             "available_tickets": event.available_tickets,
-            "is_archived": event.is_archived
+            "is_archived": event.is_archived,
+            "description": event.description
         }
         
     async def delete_event(self, event_id: int):

@@ -145,6 +145,11 @@ class EventRepository:
         
         try:
             await self.session.delete(event)
+            await self.session.flush()
+            remaining_events = await self.session.execute(select(Event).order_by(Event.id))
+            remaining_events = remaining_events.scalars().all()
+            for new_id, event in enumerate(remaining_events, start=1):
+                event.id = new_id
         except Exception:
             raise EventNotFoundException()
         
@@ -153,13 +158,16 @@ class EventRepository:
             name=event_data.name,
             date=event_data.date,
             city=event_data.city,
+            genre=event_data.genre,
             price=event_data.price,
             available_tickets=event_data.available_tickets,
-            is_archived=event_data.is_archived
+            is_archived=event_data.is_archived,
+            description=event_data.description
         )
 
         try:
             self.session.add(event)
-            return await self.session.flush()
+            result = await self.session.flush()
+            return f"Мероприятие #{result} успешно создано"
         except Exception:
             raise EventNotFoundException()

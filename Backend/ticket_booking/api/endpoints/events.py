@@ -6,7 +6,7 @@ from ticket_booking.domain.schemas.event import EventFilter, EventCreate
 from ticket_booking.services.event import EventService
 from ticket_booking.services.specialist import SpecialistService
 from ticket_booking.domain.repositories.event import EventRepository
-from ticket_booking.domain.repositories.specialist import SpecialistRepository
+from ticket_booking.domain.repositories.specialists import SpecialistRepository
 from ticket_booking.infrastructure.database import get_db
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -126,7 +126,7 @@ async def archive_event(event_id: int, db: AsyncSession = Depends(get_db), paylo
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещен")
 
 
-@router.delete("{event_id}/delete", status_code=204)
+@router.delete("{event_id}/delete")
 async def delete_event(event_id: int, db: AsyncSession = Depends(get_db), payload: dict = Depends(get_current_user)):
     event_repo = EventRepository(db)
     event_service = EventService(event_repo)
@@ -142,6 +142,7 @@ async def delete_event(event_id: int, db: AsyncSession = Depends(get_db), payloa
     if is_specialist:
         try:
             await event_service.delete_event(event_id)
+            raise HTTPException(status_code=200, detail="Мероприятие было успешно удалено")
         except Exception:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND,
@@ -149,9 +150,10 @@ async def delete_event(event_id: int, db: AsyncSession = Depends(get_db), payloa
             )
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещен")
+
     
 
-@router.post("/create", status_code=201)
+@router.post("/create", status_code=200)
 async def create_event(event_data: EventCreate, db: AsyncSession = Depends(get_db), payload: dict = Depends(get_current_user)):
     event_repo = EventRepository(db)
     event_service = EventService(event_repo)
@@ -175,3 +177,4 @@ async def create_event(event_data: EventCreate, db: AsyncSession = Depends(get_d
             )
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещен")
+

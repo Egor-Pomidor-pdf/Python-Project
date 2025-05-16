@@ -1,7 +1,7 @@
 from ticket_booking.core.security import get_password_hash, verify_password, create_access_token
 from ticket_booking.core.exceptions import InvalidCredentialsException
 from ticket_booking.domain.repositories.user import UserRepository
-from ticket_booking.domain.repositories.specialist import SpecialistRepository
+from ticket_booking.domain.repositories.specialists import SpecialistRepository
 import json
 from fastapi import HTTPException
 
