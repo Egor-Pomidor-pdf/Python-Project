@@ -145,11 +145,12 @@ class EventRepository:
         
         try:
             await self.session.delete(event)
-            await self.session.flush()
-            remaining_events = await self.session.execute(select(Event).order_by(Event.id))
-            remaining_events = remaining_events.scalars().all()
-            for new_id, event in enumerate(remaining_events, start=1):
-                event.id = new_id
+            await self.session.commit()
+            """Переписывание primary key невозможно"""
+            # remaining_events = await self.session.execute(select(Event).order_by(Event.id))
+            # remaining_events = remaining_events.scalars().all()
+            # for new_id, event in enumerate(remaining_events, start=1):
+            #     event.id = new_id
         except Exception:
             raise EventNotFoundException()
         
@@ -168,6 +169,6 @@ class EventRepository:
         try:
             self.session.add(event)
             result = await self.session.flush()
-            return f"Мероприятие #{result} успешно создано"
+            return f"Мероприятие #{event.id} успешно создано"
         except Exception:
             raise EventNotFoundException()
