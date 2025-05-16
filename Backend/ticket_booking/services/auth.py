@@ -1,15 +1,13 @@
 from ticket_booking.core.security import get_password_hash, verify_password, create_access_token
 from ticket_booking.core.exceptions import InvalidCredentialsException
 from ticket_booking.domain.repositories.user import UserRepository
-from ticket_booking.domain.repositories.specialists import SpecialistRepository
 import json
 from fastapi import HTTPException
 
 
 class AuthService:
-    def __init__(self, user_repository: UserRepository, specialist_repository: SpecialistRepository):
+    def __init__(self, user_repository: UserRepository):
         self.user_repo = user_repository
-        self.specialist_repo = specialist_repository
 
     async def register_user(self, user_data: dict):
         if 'password' not in user_data:
@@ -32,14 +30,6 @@ class AuthService:
         user = await self.user_repo.authenticate(login)
         if not user or not verify_password(password, user.password_hash, user.username):
             raise InvalidCredentialsException("Неверный логин или пароль")
-        
-        is_specialist = await self.specialist_repo.is_specialist(login)
-        if is_specialist:
-            return {
-                "message": "Вход выполнен успешно, Вы специалист",
-                "access_token": create_access_token({"sub": user.username}),
-                "token_type": "bearer"
-            }
 
         return {
             "user_id": user.id,
