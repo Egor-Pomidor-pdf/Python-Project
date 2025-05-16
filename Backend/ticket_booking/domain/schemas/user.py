@@ -1,5 +1,15 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
+from enum import Enum
+
+
+class Genre(str, Enum):
+    THEATRE = "театр"
+    CINEMA = "кино"
+    SPORTS = "спорт"
+    MUSIC = "музыка"
+    MAGIC = "магия"
+    PERFORMANCE = "перформанс"
 
 
 class UserCreate(BaseModel):
@@ -10,7 +20,8 @@ class UserCreate(BaseModel):
     phone_number: str
     email: EmailStr
     password: str
-    preferences: Optional[List[str]] = None
+    city: str
+    preferences: Optional[List[Genre]] = None
 
 
 class UserLogin(BaseModel):
@@ -21,9 +32,12 @@ class UserLogin(BaseModel):
 class UserOut(BaseModel):
     username: str
     email: str
+    phone_number: str
     first_name: str
     last_name: str
-    preferences: Optional[List[str]] = None
+    middle_name: Optional[str] = None
+    city: Optional[str] = None
+    preferences: Optional[List[Genre]] = None
 
     class Config:
         from_attributes = True
@@ -41,3 +55,5 @@ class UserUpdate(BaseModel):
 class Register_specialist(BaseModel):
     username: str
     role: str
+    city: Optional[str] = None
+    preferences: Optional[List[Genre]] = None

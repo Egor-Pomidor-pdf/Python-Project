@@ -13,3 +13,4 @@ class Event(Base):
     available_tickets = Column(Integer)
     is_archived = Column(Boolean, default=False)
     description = Column(String, nullable=True)
+    image_url = Column(String, nullable=True)

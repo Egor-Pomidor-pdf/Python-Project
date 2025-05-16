@@ -4,10 +4,14 @@ from datetime import datetime, timedelta
 from ticket_booking.domain.schemas.event import EventCreate
 from fastapi import HTTPException, status
 from ticket_booking.domain.repositories.event import EventRepository
+from ticket_booking.domain.models.event import Event
 from ticket_booking.core.config import settings
 import random
 import asyncio
-from ticket_booking.domain.schemas.rating import ReviewOut
+from ticket_booking.domain.schemas.rating import ReviewOut, RatingOut
+from ticket_booking.domain.models.rating import Rating
+from ticket_booking.domain.models.user import User
+from sqlalchemy import select, delete
 from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
 
 
@@ -21,7 +25,7 @@ class EventService:
         self.ticketmaster_api_key = settings.TICKETMASTER_API_KEY
         self.base_url = "https://app.ticketmaster.com/discovery/v2/events.json"
 
-    async def generate_events(self, count: int = 50):
+    async def generate_events(self, session, count: int = 50):
         logger.info(f"Запрашиваем все события: count={count}")
         async with httpx.AsyncClient() as client:
             saved_count = 0
@@ -31,6 +35,7 @@ class EventService:
                 "size": min(count, 100),
                 "sort": "date,asc",
                 "page": page,
+                "startDateTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
 
             try:
@@ -68,14 +73,24 @@ class EventService:
                                 f"Пропускаем событие '{event.get('name', 'Unknown Event')}' из-за отсутствия города")
                             continue
 
+                        event_date = self._parse_event_date(event)
+                        try:
+                            event_datetime = datetime.strptime(event_date, "%Y-%m-%d %H:%M:%S")
+                            if event_datetime < datetime.now():
+                                logger.info(f"Пропускаем событие '{event.get('name')}' с прошедшей датой {event_date}")
+                                continue
+                        except ValueError:
+                            logger.warning(f"Неверный формат даты для события '{event.get('name')}'")
+                            continue
+
                         event_data = {
                             "name": event.get("name", "Unknown Event"),
-                            "date": self._parse_event_date(event),
+                            "date": event_date,
                             "city": city,
-                            "genre": self._get_genre(event),
+                            "genre": self._map_genre(self._get_genre(event)),
                             "price": self._get_price(event),
                             "available_tickets": random.randint(50, 200),
-                            "description": self._get_description(event),  # Добавляем описание
+                            "description": self._get_description(event),
                         }
                         existing_event = await self.event_repo.get_by_name_and_date(
                             event_data["name"], event_data["date"]
@@ -98,7 +113,51 @@ class EventService:
 
             except Exception as e:
                 logger.error(f"Ошибка при загрузке событий: {str(e)}")
+                await session.rollback()
                 raise ValueError(f"Ошибка при загрузке событий: {str(e)}")
+
+    async def delete_expired_events(self, session):
+        logger.info("Удаление прошедших событий")
+        try:
+            result = await session.execute(
+                delete(Event).where(
+                    Event.date < datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                )
+            )
+            await session.commit()
+            logger.info(f"Удалено {result.rowcount} прошедших событий")
+            return result.rowcount
+        except Exception as e:
+            await session.rollback()
+            logger.error(f"Ошибка при удалении прошедших событий: {str(e)}")
+            raise ValueError(f"Ошибка при удалении событий: {str(e)}")
+
+    def _map_genre(self, genre: str) -> str:
+        genre = genre.lower()
+        genre_mapping = {
+            "rock": "музыка",
+            "pop": "музыка",
+            "jazz": "музыка",
+            "classical": "музыка",
+            "concert": "музыка",
+            "drama": "театр",
+            "comedy": "театр",
+            "musical": "театр",
+            "movie": "кино",
+            "film": "кино",
+            "football": "спорт",
+            "basketball": "спорт",
+            "hockey": "спорт",
+            "magic": "магия",
+            "illusion": "магия",
+            "performance": "перформанс",
+            "dance": "перформанс",
+            "circus": "перформанс",
+        }
+        for key, value in genre_mapping.items():
+            if key in genre:
+                return value
+        return "разное"
 
     def _parse_event_date(self, event: dict) -> str:
         date_info = event.get("dates", {}).get("start", {})
@@ -163,25 +222,18 @@ class EventService:
         return round(random.uniform(1000, 10000), 2)
 
     def _get_description(self, event: dict) -> str:
-        """Извлечение или генерация описания мероприятия."""
         description = event.get("info") or event.get("description") or event.get("pleaseNote")
         if description and description.lower() not in ["undefined", "unknown", "не указан", "miscellaneous", "other"]:
-            return description[:1000]  # Ограничиваем длину для избежания перегрузки базы данных
+            return description[:1000]
 
-        # Генерация описания, если оригинальное отсутствует
         name = event.get("name", "неизвестное мероприятие")
         genre = self._get_genre(event)
-        city = self._get_city(event)  # Получаем город
+        city = self._get_city(event)
         date = self._parse_event_date(event)
 
-        # Если жанр определён, используем его в описании
         if genre != "Разное":
             return f"Уникальное мероприятие {genre} в городе {city} состоится {date}. Не упустите шанс посетить {name}!"
-        # Если жанр "Разное", всё равно указываем город
         return f"Мероприятие {name} пройдет {date} в городе {city}. Ожидайте анонсов!"
-
-        logger.warning(f"Описание не найдено и не сгенерировано для события: {event.get('name', 'Unknown Event')}")
-        return "Нет описания"
 
     async def filter_events(self, filters: dict):
         result = await self.event_repo.filter_events(filters)
@@ -195,7 +247,7 @@ class EventService:
                 "genre": event.genre,
                 "price": event.price,
                 "available_tickets": event.available_tickets,
-                "description": event.description,  # Добавляем описание в ответ
+                "description": event.description,
                 "average_rating": result['ratings'].get(event.id, 0)
             }
             events.append(event_data)
@@ -208,20 +260,47 @@ class EventService:
             "total_pages": (result['total_count'] + result['page_size'] - 1) // result['page_size']
         }
 
-    async def add_rating(self, user_id: int, event_id: int, score: float):
+    async def add_rating(self, session, user_id: int, event_id: int, score: float):
         if not 1 <= score <= 10:
-            raise ValueError("Оценка должна быть от 1 до 10")
-        return await self.event_repo.add_rating(user_id, event_id, score)
+            raise ValueError("Rating must be between 1 and 10")
 
-    async def add_review(self, user_id: int, event_id: int, comment: str):
+        user = await session.get(User, user_id)
+        if not user:
+            raise ValueError("User not found")
+
+        event = await self.event_repo.get_by_id(event_id)
+        if not event:
+            raise ValueError("Event not found")
+
+        rating = Rating(
+            user_id=user_id,
+            event_id=event_id,
+            score=score,
+            username=user.username
+        )
+        session.add(rating)
+        await session.flush()
+
+        return RatingOut(
+            id=rating.id,
+            user_id=rating.user_id,
+            event_id=rating.event_id,
+            score=rating.score,
+            username=rating.username
+        )
+
+    async def add_review(self, session, user_id: int, event_id: int, comment: str):
         if not comment or len(comment.strip()) == 0:
             raise ValueError("Отзыв не может быть пустым")
-        return await self.event_repo.add_review(user_id, event_id, comment)
+        user = await session.execute(select(User).where(User.id == user_id))
+        user = user.scalar_one_or_none()
+        if not user:
+            raise ValueError("Пользователь не найден")
+        return await self.event_repo.add_review(user_id, event_id, comment, user.username)
 
-    async def get_event_reviews(self, event_id: int):
+    async def get_event_reviews(self, session, event_id: int):
         reviews = await self.event_repo.get_reviews(event_id)
-        ratings = await self.event_repo.get_ratings_by_event(
-            event_id)
+        ratings = await self.event_repo.get_ratings_by_event(event_id)
 
         rating_map = {rating.user_id: rating.score for rating in ratings}
 
@@ -231,6 +310,7 @@ class EventService:
             review_outs.append(
                 ReviewOut(
                     id=review.id,
+                    username=review.username or "Unknown",
                     user_id=review.user_id,
                     event_id=review.event_id,
                     comment=review.comment,

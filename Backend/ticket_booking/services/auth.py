@@ -42,6 +42,7 @@ class AuthService:
             }
 
         return {
+            "user_id": user.id,
             "message": "Вход выполнен успешно",
             "access_token": create_access_token({"sub": user.username}),
             "token_type": "bearer"

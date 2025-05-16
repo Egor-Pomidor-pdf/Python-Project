@@ -55,6 +55,7 @@ async def login(from_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
             }
 
         return {
+            "user_id": user.id,
             "access_token": access_token,
             "token_type": "bearer",
             "message": "Вход выполнен успешно"

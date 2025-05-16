@@ -14,5 +14,6 @@ class User(Base):
     email = Column(String, unique=True)
     phone_number = Column(String, unique=True)
     password_hash = Column(String)
+    city = Column(String)
     preferences = Column(JSON, nullable=True)
     is_specialist = Column(Boolean, default=False)

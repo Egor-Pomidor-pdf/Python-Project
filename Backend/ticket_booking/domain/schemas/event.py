@@ -11,6 +11,8 @@ class EventCreate(BaseModel):
     available_tickets: int
     is_archived: bool = False
     description: Optional[str] = None
+    image_url: Optional[str] = None
+
 
 class EventOut(BaseModel):
     id: int
@@ -21,6 +23,7 @@ class EventOut(BaseModel):
     price: float
     available_tickets: int
     description: Optional[str] = None
+    image_url: Optional[str] = None
 
     class Config:
         from_attributes = True
