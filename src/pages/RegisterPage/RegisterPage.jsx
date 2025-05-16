@@ -37,7 +37,8 @@ const RegisterPage = () => {
     phone_number: phoneNumber,
     email: email,
     password: password,
-    preferences: preferences
+    preferences: ["cпорт"],
+    city: "пизда"
   };
 
   const RegisterFormSend = async (e) => {
