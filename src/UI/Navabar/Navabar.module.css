@@ -66,3 +66,19 @@
 .navabar__links__item_post {
   background-color: transparent; 
 }
+/* ffff */
+
+.navabar__links__item_logout {
+  width: 115px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.navabar__links__item_logout:hover {
+  background-color: #d9363e;
+}

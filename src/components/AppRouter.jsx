@@ -11,6 +11,7 @@ import TicketBadPage from "../pages/TicketBadPage";
 import EventPage from "../pages/EventPage/EventPage";
 import LkPage from "../pages/LkPage/LkPage";
 import Login from "../pages/LoginPage/LoginPage";
+import NotificationsPage from "../pages/NotificationsPage/NotificationsPage";
 
 const AppRouter = () => {
   const { isAuth, isLoading } = useContext(AuthContext);
@@ -29,7 +30,8 @@ const AppRouter = () => {
     { path: "/ticketBad", element: <TicketBadPage /> },
     { path: "/event/:id", element: <EventPage /> },
     { path: "*", element: <Navigate to="/home" replace /> },
-    {path: "/lkabinet", element: <LkPage/>}
+    {path: "/lkabinet", element: <LkPage/>},
+    {path: "/notifs", element: <NotificationsPage/>}
   ]
 
   const publicRoutes = [

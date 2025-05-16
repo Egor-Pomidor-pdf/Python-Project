@@ -164,9 +164,12 @@ const PostsPage = () => {
                 onChange={handleFilterChange}
               >
                 <option value="">Все жанры</option>
-                <option value="rock">Рок</option>
-                <option value="pop">Поп</option>
-                <option value="jazz">Джаз</option>
+                <option value="спорт">Спорт</option>
+                <option value="кино">Кино</option>
+                <option value="театр">Театр</option>
+                <option value="музыка">Музыка</option>
+                <option value="магия">Магия</option>
+                <option value="перфоманс">Перфоманс</option>
               </select>
 
               <button onClick={resetFilters} className={cl.resetButton}>

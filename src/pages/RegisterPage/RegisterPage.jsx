@@ -1,6 +1,8 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import cl from "./RegisterPage.module.css";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context";
 
 const RegisterPage = () => {
   const [firstName, setFirstName] = useState("");
@@ -11,16 +13,17 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [preferences, setPreferences] = useState([]);
+  const [city, setCity] = useState("");
+  const navigate = useNavigate()
+  const { setIsAuth } = useContext(AuthContext); 
 
   const preferenceOptions = [
-    "Спорт",
-    "Кино",
-    "Музыка",
-    "Книги",
-    "Путешествия",
-    "Технологии",
-    "Кулинария",
-    "Искусство"
+    "спорт",
+    "кино",
+    "театр",
+    "музыка",
+    "магия",
+    "перфоманс",
   ];
 
   const handlePreferenceChange = (e) => {
@@ -37,15 +40,24 @@ const RegisterPage = () => {
     phone_number: phoneNumber,
     email: email,
     password: password,
-    preferences: ["cпорт"],
-    city: "пизда"
+    preferences: preferences,
+    city: city
   };
 
   const RegisterFormSend = async (e) => {
     e.preventDefault();
     try {
+      setIsAuth(false);
+      localStorage.removeItem("auth");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userId");
+      delete axios.defaults.headers.common['Authorization'];
+
+
       const response = await axios.post("/auth/register", userData);
       console.log("Данные успешно отправлены", response.data);
+      navigate("/login")
+      
       
       setLastName("");
       setFirstName("");
@@ -55,6 +67,7 @@ const RegisterPage = () => {
       setEmail("");
       setPassword("");
       setPreferences([]);
+      setCity("");
     } catch (error) {
       console.error("Ошибка", error.response?.data || error.message);
     }
@@ -117,6 +130,13 @@ const RegisterPage = () => {
           type="password"
           placeholder="Пароль"
           required
+        />
+        <input
+          className={cl.input}
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          type="text"
+          placeholder="Город"
         />
         
         <label htmlFor="preferences" className={cl.label}>Предпочтения:</label>

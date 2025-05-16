@@ -254,13 +254,6 @@ const LkPage = () => {
                         
                     }
             </section>
-
-            <section className={cl.section}>
-                <h2 className={cl.sectionTitle}>Уведомления</h2>
-                <div className={cl.notifications}>
-                    <p className={cl.notificationText}>Функция уведомлений в разработке</p>
-                </div>
-            </section>
         </div>
     );
 };
