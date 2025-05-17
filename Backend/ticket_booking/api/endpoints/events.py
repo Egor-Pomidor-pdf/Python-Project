@@ -10,6 +10,7 @@ from ticket_booking.services.specialist import SpecialistService
 from ticket_booking.infrastructure.auth import get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
 from ticket_booking.core.config import settings
+from ticket_booking.core.exceptions import DuplicationEventExeption
 from ticket_booking.core.security import oauth2_scheme
 from ticket_booking.domain.repositories.user import UserRepository
 
@@ -176,10 +177,12 @@ async def create_event(event_data: EventCreate, db: AsyncSession = Depends(get_d
         try:
             event_id = await event_service.create_event(event_data)
             return event_id
+        except DuplicationEventExeption:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Событие уже создано")
         except Exception:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND,
-                detail=f"Неудачно, повторите попытку позже"
+                detail=f"Невозможно создать событие, повторите попытку позже"
             )
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещен")
