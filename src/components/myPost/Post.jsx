@@ -84,17 +84,17 @@ const Post = ({
       console.error("Ошибка при архивировании:", error);
     }
   };
-
+  
   const handleDelete = async () => {
-    try {
-      await axios.delete(`/api/events/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      onEventDeleted?.(id);
-    } catch (error) {
-      console.error("Ошибка при удалении:", error);
-    }
-  };
+  try {
+    await axios.delete(`/${id}/delete`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    onEventDeleted?.(id);
+  } catch (error) {
+    console.error("Ошибка при удалении:", error);
+  }
+};
 
   const handleEdit = () => {
     navigate(`/event/${id}/edit`, {
