@@ -1,11 +1,10 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import MyBytton from "../../UI/MyButton/MyBytton";
 import cl from "./Post.module.css";
 import MyTooltip from "../../UI/Tooltip/MyTooltip";
-import { Star, Archive, Trash2, Edit, Plus } from "lucide-react";
+import { Star, Archive, Trash2, Edit } from "lucide-react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const Post = ({
   id,
@@ -17,12 +16,29 @@ const Post = ({
   description,
   average_rating,
   image_url,
-  isModerator = false, 
-  onEventUpdated, 
-  onEventDeleted 
+  onEventUpdated,
+  onEventDeleted
 }) => {
+  const [isSpecialist, setIsSpecialist] = useState(false);
   const token = localStorage.getItem("accessToken");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSpecialistStatus = async () => {
+      if (!token) return;
+      
+      try {
+        const response = await axios.get("/api/auth/check-specialist", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setIsSpecialist(response.data.is_specialist);
+      } catch (error) {
+        console.error("Ошибка проверки прав специалиста:", error);
+      }
+    };
+
+    checkSpecialistStatus();
+  }, [token]);
 
   const renderRating = (rating) => {
     const stars = [];
@@ -47,31 +63,28 @@ const Post = ({
     );
   };
 
-  // Архивирование события
   const handleArchive = async () => {
     try {
-      await axios.patch(`/${id}/archive`, {}, {
+      await axios.patch(`/api/events/${id}/archive`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      onEventUpdated?.(); // Обновляем список событий
+      onEventUpdated?.();
     } catch (error) {
       console.error("Ошибка при архивировании:", error);
     }
   };
 
-  // Удаление события
   const handleDelete = async () => {
     try {
-      await axios.delete(`/${id}/delete`, {
+      await axios.delete(`/api/events/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      onEventDeleted?.(id); // Удаляем событие из списка
+      onEventDeleted?.(id);
     } catch (error) {
       console.error("Ошибка при удалении:", error);
     }
   };
 
-  // Редактирование события
   const handleEdit = () => {
     navigate(`/event/${id}/edit`, {
       state: {
@@ -87,11 +100,6 @@ const Post = ({
     });
   };
 
-  // Создание нового события (перенаправление)
-  const handleCreate = () => {
-    navigate("/event/create");
-  };
-
   return (
     <div className={cl.post}>
       <img src={image_url} className={cl.post__image} alt={name} />
@@ -105,7 +113,6 @@ const Post = ({
         <p className={cl.post__desc}>{description}</p>
         
         <div className={cl.post__block}>
-          {/* Блок информации о событии */}
           <div className={cl.post__block__item}>
             <MyTooltip text="Дата мероприятия">
               <div className={cl.infoItem}>
@@ -142,7 +149,6 @@ const Post = ({
             </MyTooltip>
           </div>
           
-          {/* Основная кнопка для пользователей */}
           <Link
             to={token ? `/event/${id}` : '/login'}
             state={{
@@ -161,8 +167,7 @@ const Post = ({
             <MyBytton className={cl.post__btn}>Купить Билет</MyBytton>
           </Link>
 
-          {/* Панель модератора */}
-          {isModerator && (
+          {isSpecialist && (
             <div className={cl.moderatorControls}>
               <MyTooltip text="Редактировать">
                 <button onClick={handleEdit} className={cl.controlButton}>
