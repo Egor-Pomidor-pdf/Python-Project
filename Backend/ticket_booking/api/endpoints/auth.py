@@ -31,6 +31,7 @@ async def login(from_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
             raise InvalidCredentialsException("Неверный логи или пароль")
         access_token = create_access_token({"sub": user.username})
         return {
+            "user_id": user.id,
             "access_token": access_token,
             "token_type": "bearer",
             "message": "Вход выполнен успешно"

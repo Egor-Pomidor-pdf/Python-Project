@@ -12,3 +12,4 @@ class Event(Base):
     price = Column(Float)
     available_tickets = Column(Integer)
     description = Column(String, nullable=True)
+    image_url = Column(String, nullable=True)
