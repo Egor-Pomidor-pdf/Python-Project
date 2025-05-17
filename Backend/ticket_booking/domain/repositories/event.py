@@ -4,7 +4,7 @@ from ticket_booking.domain.schemas.event import EventCreate
 from ticket_booking.domain.models.event import Event
 from ticket_booking.domain.models.rating import Rating
 from ticket_booking.domain.models.review import Review
-from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
+from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException, DuplicationEventExeption
 from datetime import datetime
 
 
@@ -166,6 +166,11 @@ class EventRepository:
             is_archived=event_data.is_archived,
             description=event_data.description
         )
+
+        result = await self.session.execute(select(Event).where((Event.name == event.name) & (Event.date == event.date)))
+        result = result.scalar_one_or_none()
+        if result:
+            raise DuplicationEventExeption()
 
         try:
             self.session.add(event)

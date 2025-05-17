@@ -48,17 +48,21 @@ async def login(from_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
         access_token = create_access_token({"sub": user.username, "rights": user.is_specialist})
 
         if await specialist_repo.is_specialist(user.username):
+            is_specialist = True
             return {
+                "is_specialist": is_specialist,
                 "access_token": access_token,
                 "token_type": "bearer",
-                "message": f"Вход выполнен успешно. Здравствуйте, {user.first_name}"
+                "message": f"Вход выполнен успешно. Здравствуйте, {user.username}"
             }
 
+        is_specialist = False
         return {
+            "is_specialist": is_specialist,
             "user_id": user.id,
             "access_token": access_token,
             "token_type": "bearer",
-            "message": "Вход выполнен успешно"
+            "message": f"Вход выполнен успешно. Здравствуйте, {user.username}"
         }
 
     except Exception as e:

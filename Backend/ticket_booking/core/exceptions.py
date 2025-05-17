@@ -26,3 +26,7 @@ class NotEnoughTicketsException(Exception):
 class TransactionNotFoundException(HTTPException):
     def __init__(self, detail="Транзакция не найдена", status_code=404):
         super().__init__(status_code=status_code, detail=detail)
+
+
+class DuplicationEventExeption(HTTPException):
+    pass

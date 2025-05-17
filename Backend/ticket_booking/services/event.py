@@ -8,6 +8,7 @@ from ticket_booking.domain.models.event import Event
 from ticket_booking.core.config import settings
 import random
 import asyncio
+from ticket_booking.core.exceptions import DuplicationEventExeption
 from ticket_booking.domain.schemas.rating import ReviewOut, RatingOut
 from ticket_booking.domain.models.rating import Rating
 from ticket_booking.domain.models.user import User
@@ -348,5 +349,7 @@ class EventService:
     async def create_event(self, event_data: EventCreate):
         try:
             return await self.event_repo.create_event(event_data)
+        except DuplicationEventExeption:
+            raise DuplicationEventExeption()
         except Exception:
             raise EventNotFoundException()
