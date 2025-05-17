@@ -1,2 +1,23 @@
 env/
 .venv/
+
+# Игнорировать папку node_modules
+node_modules/
+
+# Игнорировать кэш (например, из .cache/)
+.cache/
+*.cache
+
+# Дополнительные файлы, которые часто игнорируют
+.DS_Store          # MacOS служебный файл
+.env               # Локальные переменные окружения
+.env.local         
+dist/              # Скомпилированные файлы (если используете TypeScript/Babel)
+build/             
+*.log              # Логи
+.idea/             # Настройки IDE (WebStorm, PyCharm)
+.vscode/           # Настройки VS Code
+
+node_modules/
+.cache/
+*.pack
