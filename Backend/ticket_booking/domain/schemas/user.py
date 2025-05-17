@@ -51,3 +51,9 @@ class UserUpdate(BaseModel):
     phone_number: Optional[str] = None
     city: Optional[str] = None
     preferences: Optional[List[Genre]] = None
+
+class Register_specialist(BaseModel):
+    username: str
+    role: str
+    city: Optional[str] = None
+    preferences: Optional[List[Genre]] = None

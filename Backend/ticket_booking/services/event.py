@@ -2,7 +2,9 @@ import httpx
 import logging
 from datetime import datetime, timedelta
 from ticket_booking.domain.repositories.event import EventRepository
+from ticket_booking.core.exceptions import EventNotFoundException
 from ticket_booking.domain.models.event import Event
+from ticket_booking.domain.schemas.event import EventCreate
 from ticket_booking.core.config import settings
 from ticket_booking.domain.models.rating import Rating
 import random
@@ -22,9 +24,6 @@ class EventService:
         self.base_url = "https://app.ticketmaster.com/discovery/v2/events.json"
 
     def _get_best_image(self, images: list) -> str:
-        """
-        Выбирает лучшее изображение из массива images, отдавая предпочтение большому размеру и соотношению 16:9.
-        """
         if not images:
             logger.warning("Изображения не найдены для события")
             return "https://via.placeholder.com/300x200.png?text=No+Image"
@@ -340,3 +339,33 @@ class EventService:
                 )
             )
         return review_outs
+
+    async def archive_event(self, event_id: int):
+        event = await self.event_repo.archive_event(event_id)
+
+        if not event:
+            raise EventNotFoundException()
+
+        return {
+            "id": event.id,
+            "name": event.name,
+            "date": event.date,
+            "city": event.city,
+            "genre": event.genre,
+            "price": event.price,
+            "available_tickets": event.available_tickets,
+            "is_archived": event.is_archived,
+            "description": event.description
+        }
+
+    async def delete_event(self, event_id: int):
+        try:
+            await self.event_repo.delete_event(event_id)
+        except Exception:
+            raise EventNotFoundException()
+
+    async def create_event(self, event_data: EventCreate):
+        try:
+            return await self.event_repo.create_event(event_data)
+        except Exception:
+            raise EventNotFoundException()

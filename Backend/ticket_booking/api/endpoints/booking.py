@@ -49,7 +49,6 @@ async def book_ticket(
             user_id=user_id
         )
 
-        # Отправляем уведомление о покупке
         await notification_service.create_purchase_notification(user_id, book_data.event_id)
 
         return result
