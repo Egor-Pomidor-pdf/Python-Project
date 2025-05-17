@@ -1,4 +1,4 @@
-# Zибен Event Booking
+# Zибен Афиша
 
 ## Состав команды:
 1. **Туймуков Егор** - <span style="color:red">*Team Lead & Frontend Developer*</span>
