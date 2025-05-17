@@ -17,7 +17,7 @@ const Post = ({
   description,
   average_rating,
   image_url,
-  isModerator = true, 
+  isModerator = false, 
   onEventUpdated, 
   onEventDeleted 
 }) => {
