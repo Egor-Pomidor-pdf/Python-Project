@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from ticket_booking.api.endpoints import auth, events, booking, profile
 from ticket_booking.infrastructure.database import init_db, AsyncSessionLocal
 from ticket_booking.services.event import EventService
@@ -20,6 +21,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["X-CSRF-Token"],
 )
+
+# Serve static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.middleware("http")
@@ -43,7 +47,7 @@ async def run_generate_events():
         try:
             event_repo = EventRepository(session)
             event_service = EventService(event_repo)
-            await event_service.generate_events(session, count=50)
+            await event_service.generate_events(session, count=10)
             await event_service.delete_expired_events(session)
             await session.commit()
         except Exception as e:
@@ -73,13 +77,13 @@ async def on_startup():
     scheduler.add_job(
         run_generate_events,
         "interval",
-        hours=6,
+        hours=4,
     )
 
     scheduler.add_job(
         run_check_and_notify_recommendations,
         "interval",
-        hours=3,
+        hours=6,
     )
 
     scheduler.start()
