@@ -30,30 +30,17 @@ const Post = ({
         return;
       }
       
-      // Проверяем статус из localStorage (установленный при входе)
+      // Проверяем статус модератора из localStorage
       const specialistStatus = localStorage.getItem("is_specialist") === "true";
       setIsSpecialist(specialistStatus);
     };
 
     checkSpecialistStatus();
-    
-    // Добавляем слушатель изменения localStorage
-    const handleStorageChange = (e) => {
-      if (e.key === "is_specialist") {
-        setIsSpecialist(e.newValue === "true");
-      }
-      if (e.key === "accessToken" && !e.newValue) {
-        setIsSpecialist(false);
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
   }, [token]);
 
   const renderRating = (rating) => {
     const stars = [];
-    const fullStars = rating;
+    const fullStars = Math.floor(rating);
     
     for (let i = 0; i < 5; i++) {
       stars.push(
@@ -69,40 +56,81 @@ const Post = ({
     return (
       <div className={cl.ratingContainer}>
         {stars}
-        <span className={cl.ratingText}>{rating}</span>
+        <span className={cl.ratingText}>{rating.toFixed(1)}</span>
       </div>
     );
   };
 
+  // Функция архивации события
   const handleArchive = async () => {
-  try {
-    const response = await axios.patch(`/${id}/archive`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    if (response.data.is_archived) {
-      onEventDeleted?.(id);
-      alert('Событие успешно архивировано');
-    } else {
-      alert('Не удалось архивировать событие');
+    if (!window.confirm("Вы уверены, что хотите архивировать это событие?")) {
+      return;
     }
-  } catch (error) {
-    console.error("Ошибка при архивировании:", error);
-    alert(error.response?.data?.message || 'Ошибка архивирования');
-  }
-};
 
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/events/${id}/archive`,
+        {},
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        onEventDeleted?.(id);
+        alert("Событие успешно архивировано");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Archive error:", error);
+      if (error.response?.status === 403) {
+        alert("Ошибка: Нет прав для выполнения этого действия");
+      } else if (error.response?.status === 404) {
+        alert("Событие не найдено");
+      } else {
+        alert(`Ошибка архивации: ${error.response?.data?.detail || error.message}`);
+      }
+    }
+  };
+
+  // Функция удаления события
   const handleDelete = async () => {
-  try {
-    await axios.delete(`/${id}/delete`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    onEventDeleted?.(id);
-  } catch (error) {
-    console.error("Ошибка при удалении:", error);
-  }
-};
+    if (!window.confirm("Вы уверены, что хотите удалить это событие?")) {
+      return;
+    }
 
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/events/${id}/delete`,
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        onEventDeleted?.(id);
+        alert("Событие успешно удалено");
+        navigate("/posts");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      if (error.response?.status === 403) {
+        alert("Ошибка: Нет прав для выполнения этого действия");
+      } else if (error.response?.status === 404) {
+        alert("Событие не найдено");
+      } else {
+        alert(`Ошибка удаления: ${error.response?.data?.detail || error.message}`);
+      }
+    }
+  };
+
+  // Функция редактирования события
   const handleEdit = () => {
     navigate(`/event/${id}/edit`, {
       state: {
@@ -135,7 +163,7 @@ const Post = ({
             <MyTooltip text="Дата мероприятия">
               <div className={cl.infoItem}>
                 <span className={cl.infoLabel}>Дата</span>
-                <span className={cl.infoValue}>{date}</span>
+                <span className={cl.infoValue}>{new Date(date).toLocaleDateString()}</span>
               </div>
             </MyTooltip>
           </div>
