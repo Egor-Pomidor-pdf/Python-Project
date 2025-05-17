@@ -6,6 +6,7 @@ from ticket_booking.core.security import oauth2_scheme
 from ticket_booking.infrastructure.database import get_db
 from ticket_booking.domain.repositories.user import UserRepository
 from ticket_booking.domain.repositories.notification import NotificationRepository
+from ticket_booking.domain.repositories.specialists import SpecialistRepository
 from ticket_booking.domain.schemas.notification import NotificationOut
 from ticket_booking.domain.repositories.transactions import TransactionRepository
 from ticket_booking.domain.repositories.event import EventRepository
@@ -40,7 +41,8 @@ async def get_profile(
         raise HTTPException(status_code=401, detail="Неверный токен")
 
     user_repo = UserRepository(db)
-    auth_service = AuthService(user_repo)
+    specialist_repo = SpecialistRepository(db)
+    auth_service = AuthService(user_repo, specialist_repo)
     user = await auth_service.get_user_by_username(username)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
@@ -73,7 +75,8 @@ async def update_profile(
         raise HTTPException(status_code=401, detail="Неверный токен")
 
     user_repo = UserRepository(db)
-    auth_service = AuthService(user_repo)
+    specialist_repo = SpecialistRepository(db)
+    auth_service = AuthService(user_repo, specialist_repo)
     user = await auth_service.get_user_by_username(username)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
@@ -110,7 +113,8 @@ async def get_transactions(
         raise HTTPException(status_code=401, detail="Неверный токен")
 
     user_repo = UserRepository(db)
-    auth_service = AuthService(user_repo)
+    specialist_repo = SpecialistRepository(db)
+    auth_service = AuthService(user_repo, specialist_repo)
     user = await auth_service.get_user_by_username(username)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
@@ -152,7 +156,8 @@ async def refund_transaction(
         raise HTTPException(status_code=401, detail="Неверный токен")
 
     user_repo = UserRepository(db)
-    auth_service = AuthService(user_repo)
+    specialist_repo = SpecialistRepository(db)
+    auth_service = AuthService(user_repo, specialist_repo)
     user = await auth_service.get_user_by_username(username)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
@@ -200,7 +205,8 @@ async def get_notifications(
         raise HTTPException(status_code=401, detail="Неверный токен")
 
     user_repo = UserRepository(db)
-    auth_service = AuthService(user_repo)
+    specialist_repo = SpecialistRepository(db)
+    auth_service = AuthService(user_repo, specialist_repo)
     user = await auth_service.get_user_by_username(username)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
@@ -213,9 +219,10 @@ async def get_notifications(
     elif status == "all":
         pass
     else:
-        notifications = [n for n in notifications ]
+        notifications = [n for n in notifications]
 
     return notifications
+
 
 @router.post("/notifications/{notification_id}/read")
 async def mark_notification_as_read(
@@ -233,7 +240,8 @@ async def mark_notification_as_read(
         raise HTTPException(status_code=401, detail="Неверный токен")
 
     user_repo = UserRepository(db)
-    auth_service = AuthService(user_repo)
+    specialist_repo = SpecialistRepository(db)
+    auth_service = AuthService(user_repo, specialist_repo)
     user = await auth_service.get_user_by_username(username)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
@@ -243,6 +251,7 @@ async def mark_notification_as_read(
     if notification.user_id != user.id:
         raise HTTPException(status_code=403, detail="Доступ запрещен: уведомление принадлежит другому пользователю")
     return {"message": "Уведомление отмечено как прочитанное"}
+
 
 @router.delete("/notifications/{notification_id}")
 async def delete_notification(
@@ -260,7 +269,8 @@ async def delete_notification(
         raise HTTPException(status_code=401, detail="Неверный токен")
 
     user_repo = UserRepository(db)
-    auth_service = AuthService(user_repo)
+    specialist_repo = SpecialistRepository(db)
+    auth_service = AuthService(user_repo, specialist_repo)
     user = await auth_service.get_user_by_username(username)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")

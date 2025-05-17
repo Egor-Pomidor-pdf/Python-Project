@@ -43,11 +43,9 @@ class NotificationRepository:
         if not notification:
             raise ValueError("Уведомление не найдено")
 
-        # Delete the notification
         await self.session.delete(notification)
         await self.session.flush()
 
-        # Update IDs of notifications with higher IDs
         await self.session.execute(
             update(Notification)
             .where(Notification.id > notification_id)
@@ -55,7 +53,6 @@ class NotificationRepository:
         )
         await self.session.flush()
 
-        # Reset the auto-increment sequence if sqlite_sequence exists
         try:
             max_id_result = await self.session.execute(select(func.max(Notification.id)))
             max_id = max_id_result.scalar() or 0
@@ -67,5 +64,4 @@ class NotificationRepository:
             logger.info(f"Updated sqlite_sequence for notifications to seq={max_id}")
         except Exception as e:
             logger.warning(f"Failed to update sqlite_sequence: {str(e)}. Skipping sequence update.")
-            # Continue without raising, as sequence update is optional
             await self.session.flush()
