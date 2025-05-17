@@ -2,7 +2,7 @@ import httpx
 import logging
 from datetime import datetime, timedelta
 from ticket_booking.domain.repositories.event import EventRepository
-from ticket_booking.core.exceptions import EventNotFoundException
+from ticket_booking.core.exceptions import EventNotFoundException, DuplicationEventExeption
 from ticket_booking.domain.models.event import Event
 from ticket_booking.domain.schemas.event import EventCreate
 from ticket_booking.core.config import settings
@@ -367,5 +367,7 @@ class EventService:
     async def create_event(self, event_data: EventCreate):
         try:
             return await self.event_repo.create_event(event_data)
+        except DuplicationEventExeption:
+            raise DuplicationEventExeption()
         except Exception:
             raise EventNotFoundException()

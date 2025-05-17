@@ -3,6 +3,8 @@ from sqlalchemy import select, func, update
 from ticket_booking.domain.models.event import Event
 from ticket_booking.domain.models.rating import Rating
 from ticket_booking.domain.models.review import Review
+from ticket_booking.domain.schemas.event import EventCreate
+from ticket_booking.core.exceptions import DuplicationEventExeption
 from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
 from datetime import datetime
 
@@ -142,3 +144,49 @@ class EventRepository:
     async def get_ratings_by_event(self, event_id: int):
         result = await self.session.execute(select(Rating).where(Rating.event_id == event_id))
         return result.scalars().all()
+
+    async def archive_event(self, event_id: int):
+        result = await self.session.execute(select(Event).where(Event.id == event_id))
+        event = result.scalar_one_or_none()
+        if not event:
+            raise EventNotFoundException()
+
+        event.is_archived = True
+        return event
+
+    async def delete_event(self, event_id: int):
+        result = await self.session.execute(select(Event).where(Event.id == event_id))
+        event = result.scalar_one_or_none()
+        if not event:
+            raise EventNotFoundException()
+
+        try:
+            await self.session.delete(event)
+            await self.session.flush()
+        except Exception:
+            raise EventNotFoundException()
+
+    async def create_event(self, event_data: EventCreate):
+        event = Event(
+            name=event_data.name,
+            date=event_data.date,
+            city=event_data.city,
+            genre=event_data.genre,
+            price=event_data.price,
+            available_tickets=event_data.available_tickets,
+            is_archived=event_data.is_archived,
+            description=event_data.description
+        )
+
+        result = await self.session.execute(
+            select(Event).where((Event.name == event.name) & (Event.date == event.date)))
+        result = result.scalar_one_or_none()
+        if result:
+            raise DuplicationEventExeption()
+
+        try:
+            self.session.add(event)
+            result = await self.session.flush()
+            return f"Мероприятие #{event.id} успешно создано"
+        except Exception:
+            raise EventNotFoundException()
