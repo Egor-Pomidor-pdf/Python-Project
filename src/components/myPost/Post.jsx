@@ -2,10 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import MyBytton from "../../UI/MyButton/MyBytton";
 import cl from "./Post.module.css";
-import im from "./image.png";
 import MyTooltip from "../../UI/Tooltip/MyTooltip";
-import { Star } from "lucide-react"; // Или используйте свою иконку звезды
-const token = localStorage.getItem('accessToken');
+import { Star, Archive, Trash2, Edit, Plus } from "lucide-react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 const Post = ({
   id,
   name,
@@ -15,14 +16,17 @@ const Post = ({
   available_tickets,
   description,
   average_rating,
-  image_url
+  image_url,
+  isModerator = true, 
+  onEventUpdated, 
+  onEventDeleted 
 }) => {
-  // Функция для отображения рейтинга звездами
   const token = localStorage.getItem("accessToken");
-  
+  const navigate = useNavigate();
+
   const renderRating = (rating) => {
     const stars = [];
-    const fullStars = rating; // Так как rating всегда целый (1.0, 2.0 и т.д.)
+    const fullStars = rating;
     
     for (let i = 0; i < 5; i++) {
       stars.push(
@@ -38,9 +42,54 @@ const Post = ({
     return (
       <div className={cl.ratingContainer}>
         {stars}
-        <span className={cl.ratingText}>{rating}</span> {/* Просто выводим число */}
+        <span className={cl.ratingText}>{rating}</span>
       </div>
     );
+  };
+
+  // Архивирование события
+  const handleArchive = async () => {
+    try {
+      await axios.patch(`/${id}/archive`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      onEventUpdated?.(); // Обновляем список событий
+    } catch (error) {
+      console.error("Ошибка при архивировании:", error);
+    }
+  };
+
+  // Удаление события
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/${id}/delete`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      onEventDeleted?.(id); // Удаляем событие из списка
+    } catch (error) {
+      console.error("Ошибка при удалении:", error);
+    }
+  };
+
+  // Редактирование события
+  const handleEdit = () => {
+    navigate(`/event/${id}/edit`, {
+      state: {
+        id,
+        name,
+        date,
+        city,
+        price,
+        available_tickets,
+        description,
+        image_url
+      }
+    });
+  };
+
+  // Создание нового события (перенаправление)
+  const handleCreate = () => {
+    navigate("/event/create");
   };
 
   return (
@@ -56,6 +105,7 @@ const Post = ({
         <p className={cl.post__desc}>{description}</p>
         
         <div className={cl.post__block}>
+          {/* Блок информации о событии */}
           <div className={cl.post__block__item}>
             <MyTooltip text="Дата мероприятия">
               <div className={cl.infoItem}>
@@ -92,9 +142,9 @@ const Post = ({
             </MyTooltip>
           </div>
           
+          {/* Основная кнопка для пользователей */}
           <Link
-          
-        to={token ? `/event/${id}` : '/login'}
+            to={token ? `/event/${id}` : '/login'}
             state={{
               id,
               name,
@@ -105,12 +155,34 @@ const Post = ({
               description,
               average_rating,
               image_url
-
             }}
             className={cl.post__btnLink}
           >
             <MyBytton className={cl.post__btn}>Купить Билет</MyBytton>
           </Link>
+
+          {/* Панель модератора */}
+          {isModerator && (
+            <div className={cl.moderatorControls}>
+              <MyTooltip text="Редактировать">
+                <button onClick={handleEdit} className={cl.controlButton}>
+                  <Edit size={18} />
+                </button>
+              </MyTooltip>
+              
+              <MyTooltip text="Архивировать">
+                <button onClick={handleArchive} className={cl.controlButton}>
+                  <Archive size={18} />
+                </button>
+              </MyTooltip>
+              
+              <MyTooltip text="Удалить">
+                <button onClick={handleDelete} className={cl.controlButton}>
+                  <Trash2 size={18} />
+                </button>
+              </MyTooltip>
+            </div>
+          )}
         </div>
       </div>
     </div>
