@@ -24,20 +24,31 @@ const Post = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkSpecialistStatus = async () => {
-      if (!token) return;
-      
-      try {
-        const response = await axios.get("/api/auth/check-specialist", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setIsSpecialist(response.data.is_specialist);
-      } catch (error) {
-        console.error("Ошибка проверки прав специалиста:", error);
+    const checkSpecialistStatus = () => {
+      if (!token) {
+        setIsSpecialist(false);
+        return;
       }
+      
+      // Проверяем статус из localStorage (установленный при входе)
+      const specialistStatus = localStorage.getItem("is_specialist") === "true";
+      setIsSpecialist(specialistStatus);
     };
 
     checkSpecialistStatus();
+    
+    // Добавляем слушатель изменения localStorage
+    const handleStorageChange = (e) => {
+      if (e.key === "is_specialist") {
+        setIsSpecialist(e.newValue === "true");
+      }
+      if (e.key === "accessToken" && !e.newValue) {
+        setIsSpecialist(false);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, [token]);
 
   const renderRating = (rating) => {
