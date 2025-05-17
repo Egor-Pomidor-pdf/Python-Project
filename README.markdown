@@ -82,4 +82,4 @@ Web-приложение для бронирования и условной п�
 
 ## Zибен Events
 
-![project icon](https://web.telegram.org/0c7cba33-a989-4c6c-9a0a-57acccb0fd43)
+![project icon](./static/icons/Zибен%20events%20logo.jpg)
