@@ -1,19 +1,15 @@
 import httpx
 import logging
 from datetime import datetime, timedelta
-from ticket_booking.domain.schemas.event import EventCreate
-from fastapi import HTTPException, status
 from ticket_booking.domain.repositories.event import EventRepository
 from ticket_booking.domain.models.event import Event
 from ticket_booking.core.config import settings
+from ticket_booking.domain.models.rating import Rating
 import random
 import asyncio
 from ticket_booking.domain.schemas.rating import ReviewOut, RatingOut
-from ticket_booking.domain.models.rating import Rating
 from ticket_booking.domain.models.user import User
 from sqlalchemy import select, delete
-from ticket_booking.core.exceptions import EventNotFoundException, NotEnoughTicketsException
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,21 +21,38 @@ class EventService:
         self.ticketmaster_api_key = settings.TICKETMASTER_API_KEY
         self.base_url = "https://app.ticketmaster.com/discovery/v2/events.json"
 
+    def _get_best_image(self, images: list) -> str:
+        """
+        Выбирает лучшее изображение из массива images, отдавая предпочтение большому размеру и соотношению 16:9.
+        """
+        if not images:
+            logger.warning("Изображения не найдены для события")
+            return "https://via.placeholder.com/300x200.png?text=No+Image"
+
+        for img in sorted(images, key=lambda x: x.get("width", 0), reverse=True):
+            if img.get("ratio") == "16_9":
+                return img["url"]
+        return images[0]["url"]
+
     async def generate_events(self, session, count: int = 50):
         logger.info(f"Запрашиваем все события: count={count}")
         async with httpx.AsyncClient() as client:
             saved_count = 0
             page = 0
+            page_size = min(count, 100)
+            max_paging_depth = 1000
+            max_page = max_paging_depth // page_size
+
             params = {
                 "apikey": self.ticketmaster_api_key,
-                "size": min(count, 100),
+                "size": page_size,
                 "sort": "date,asc",
                 "page": page,
                 "startDateTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
 
             try:
-                while saved_count < count:
+                while saved_count < count and page < max_page:
                     logger.info(f"Запрос страницы {page + 1}")
                     for attempt in range(3):
                         try:
@@ -55,6 +68,9 @@ class EventService:
                                 continue
                             logger.error(f"Ошибка API Ticketmaster: {e.response.status_code} - {e.response.text}")
                             raise ValueError(f"Ошибка API Ticketmaster: {e.response.status_code} - {e.response.text}")
+                        except httpx.RequestError as e:
+                            logger.error(f"Сетевая ошибка при запросе к Ticketmaster: {str(e)}")
+                            raise ValueError(f"Сетевая ошибка: {str(e)}")
                     else:
                         raise ValueError("Превышен лимит запросов к Ticketmaster API")
 
@@ -79,8 +95,8 @@ class EventService:
                             if event_datetime < datetime.now():
                                 logger.info(f"Пропускаем событие '{event.get('name')}' с прошедшей датой {event_date}")
                                 continue
-                        except ValueError:
-                            logger.warning(f"Неверный формат даты для события '{event.get('name')}'")
+                        except ValueError as e:
+                            logger.warning(f"Неверный формат даты для события '{event.get('name')}': {str(e)}")
                             continue
 
                         event_data = {
@@ -91,6 +107,7 @@ class EventService:
                             "price": self._get_price(event),
                             "available_tickets": random.randint(50, 200),
                             "description": self._get_description(event),
+                            "image_url": self._get_best_image(event.get("images", []))
                         }
                         existing_event = await self.event_repo.get_by_name_and_date(
                             event_data["name"], event_data["date"]
@@ -100,19 +117,22 @@ class EventService:
                             continue
                         await self.event_repo.create(event_data)
                         saved_count += 1
-                        logger.info(f"Добавлено событие: {event_data['name']}")
+                        logger.info(f"Добавлено событие: {event_data['name']} с изображением {event_data['image_url']}")
 
                     total_pages = data.get("page", {}).get("totalPages", 1)
                     page += 1
                     params["page"] = page
-                    if page >= total_pages:
-                        logger.info("Достигнута последняя страница событий")
+                    if page >= total_pages or page >= max_page:
+                        logger.info(f"Достигнута последняя страница или максимальная страница {max_page}")
                         break
 
+                if saved_count < count:
+                    logger.warning(
+                        f"Загружено только {saved_count} событий из запрошенных {count} из-за ограничений API или отсутствия данных")
                 return {"message": f"{saved_count} мероприятий успешно добавлены в базу данных"}
 
             except Exception as e:
-                logger.error(f"Ошибка при загрузке событий: {str(e)}")
+                logger.error(f"Полная ошибка при загрузке событий: {str(e)}", exc_info=True)
                 await session.rollback()
                 raise ValueError(f"Ошибка при загрузке событий: {str(e)}")
 
@@ -248,7 +268,8 @@ class EventService:
                 "price": event.price,
                 "available_tickets": event.available_tickets,
                 "description": event.description,
-                "average_rating": result['ratings'].get(event.id, 0)
+                "average_rating": result['ratings'].get(event.id, 0),
+                "image_url": event.image_url
             }
             events.append(event_data)
 
@@ -319,34 +340,3 @@ class EventService:
                 )
             )
         return review_outs
-
-    
-    async def archive_event(self, event_id: int):
-        event = await self.event_repo.archive_event(event_id)
-        
-        if not event:
-            raise EventNotFoundException()
-        
-        return {
-            "id": event.id,
-            "name": event.name,
-            "date": event.date,
-            "city": event.city,
-            "genre": event.genre,
-            "price": event.price,
-            "available_tickets": event.available_tickets,
-            "is_archived": event.is_archived,
-            "description": event.description
-        }
-        
-    async def delete_event(self, event_id: int):
-        try:
-            await self.event_repo.delete_event(event_id)
-        except Exception:
-            raise EventNotFoundException()
-        
-    async def create_event(self, event_data: EventCreate):
-        try:
-            return await self.event_repo.create_event(event_data)
-        except Exception:
-            raise EventNotFoundException()
