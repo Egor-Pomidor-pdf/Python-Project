@@ -5,7 +5,12 @@
 }
 
 #root {
-  
+  background: linear-gradient(
+    177.2deg,
+    #cfc0e5 0.07%,
+    #7850f0 49.56%,
+    #e9c8ff 100%
+  )
 }
 
 .App {

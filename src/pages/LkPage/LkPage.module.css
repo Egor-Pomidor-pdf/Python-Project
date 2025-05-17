@@ -1,167 +1,362 @@
+.appContainer {
+  /* background: linear-gradient(177.2deg, #cfc0e5 0.07%, #7850f0 49.56%, #e9c8ff 100%); */
+  min-height: 100vh;
+  padding: 2rem 0;
+  margin-top: 70px;
+}
+
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .title {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 2rem;
-    font-size: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.title {
+  text-align: center;
+  color: white;
+  margin-bottom: 2.5rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  color: #5c2aa8;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.userInfoItem {
+  display: flex;
+  margin-bottom: 1.5rem;
+  align-items: flex-start;
+}
+
+.infoLabel {
+  font-weight: 600;
+  color: #5c2aa8;
+  min-width: 120px;
+  margin-right: 1rem;
+}
+
+.infoValue {
+  color: #333;
+  flex: 1;
+}
+
+.preferencesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.preferenceTag {
+  background-color: #f0e6ff;
+  color: #5c2aa8;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.noPreferences {
+  color: #888;
+  font-style: italic;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #5c2aa8;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s;
+  background-color: #f9f5ff;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #8a63f2;
+  box-shadow: 0 0 0 3px rgba(138, 99, 242, 0.2);
+}
+
+.preferencesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.preferenceItem {
+  background-color: #f0e6ff;
+  color: #5c2aa8;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.removePreference {
+  background: none;
+  border: none;
+  color: #8a63f2;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.addPreference {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.preferenceSelect {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f5ff;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.editButton {
+  background-color: #8a63f2;
+  color: white;
+}
+
+.saveButton {
+  background-color: #5c2aa8;
+  color: white;
+}
+
+.cancelButton {
+  background-color: white;
+  color: #5c2aa8;
+  border: 1px solid #5c2aa8;
+}
+
+.addButton {
+  background-color: #5c2aa8;
+  color: white;
+  padding: 0.75rem 1rem;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.icon {
+  font-size: 1.1rem;
+}
+
+/* Стили для билетов */
+.ticketsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.ticketCard {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.ticketCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.ticketHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.eventName {
+  margin: 0;
+  color: #5c2aa8;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.ticketPrice {
+  background-color: #f0e6ff;
+  color: #5c2aa8;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.ticketDetails {
+  flex: 1;
+  margin-bottom: 1.5rem;
+}
+
+.detailItem {
+  margin-bottom: 0.75rem;
+}
+
+.detailLabel {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.9rem;
+  display: block;
+}
+
+.detailValue {
+  color: #333;
+  font-size: 1rem;
+}
+
+.refundButton {
+  background-color: #ff4757;
+  color: white;
+  width: 100%;
+  margin-top: auto;
+}
+
+.refundButton:hover {
+  background-color: #e84118;
+}
+
+/* Стили для пустого состояния */
+.emptyState {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.emptyImage {
+  max-width: 200px;
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
+}
+
+.emptyText {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.browseButton {
+  background-color: #5c2aa8;
+  color: white;
+}
+
+/* Уведомления */
+.notification {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 500;
+  animation: fadeIn 0.3s;
+}
+
+.success {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.error {
+  background-color: #ff4757;
+  color: white;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .container {
+      padding: 1rem;
   }
   
   .section {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
   }
   
-  .sectionTitle {
-    color: #3498db;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-  }
-  
-  .userData {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-  
-  .userInfo {
-    margin: 0.5rem 0;
-    font-size: 1.1rem;
-  }
-  
-  .formGroup {
-    margin-bottom: 1rem;
-  }
-  
-  .label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-  }
-  
-  .input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-  }
-  
-  .input:focus {
-    outline: none;
-    border-color: #3498db;
-  }
-  
-  .button {
-    padding: 0.75rem 1.5rem;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 1rem;
-  }
-  
-  .button:hover {
-    background-color: #2980b9;
+  .userInfoItem {
+      flex-direction: column;
+      gap: 0.25rem;
   }
   
   .buttonGroup {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
+      flex-direction: column;
   }
   
-  .saveButton {
-    background-color: #2ecc71;
+  .ticketsGrid {
+      grid-template-columns: 1fr;
   }
-  
-  .saveButton:hover {
-    background-color: #27ae60;
-  }
-  
-  .cancelButton {
-    background-color: #e74c3c;
-  }
-  
-  .cancelButton:hover {
-    background-color: #c0392b;
-  }
-  
-  .ticketsList {
-    display: grid;
-    gap: 1rem;
-  }
-  
-  .ticket {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .ticketInfo {
-    flex: 1;
-  }
-  
-  .refundButton {
-    background-color: #f39c12;
-  }
-  
-  .refundButton:hover {
-    background-color: #d35400;
-  }
-  
-  .noRefund {
-    color: #7f8c8d;
-    font-style: italic;
-  }
-  
-  .noTickets {
-    text-align: center;
-    color: #7f8c8d;
-    font-style: italic;
-  }
-  
-  .notification {
-    padding: 1rem;
-    background-color: #2ecc71;
-    color: white;
-    border-radius: 4px;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    animation: fadeIn 0.3s;
-  }
-  
-  .notifications {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  .notificationText {
-    color: #7f8c8d;
-    font-style: italic;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+}

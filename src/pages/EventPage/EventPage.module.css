@@ -1,334 +1,582 @@
-/* Основные стили контейнера */
+/* EventPage.module.css */
+
+.background {
+  min-height: 100vh;
+  background: linear-gradient(
+      177.2deg,
+      #cfc0e5 0.07%,
+      #7850f0 49.56%,
+      #e9c8ff 100%
+  );
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
 .eventContainer {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    padding-top: 130px;
-    font-family: 'Arial', sans-serif;
-    color: #333;
+  max-width: 1200px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  padding: 2rem;
+  margin: 2rem 0;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out;
+  margin-top: 150px;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(20px);
   }
-  
-  /* Стили для сообщения об ошибке */
-  .errorMessage {
-    text-align: center;
-    padding: 3rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    margin-top: 2rem;
+  to {
+      opacity: 1;
+      transform: translateY(0);
   }
-  
-  .errorMessage h2 {
-    color: #dc3545;
-    margin-bottom: 1rem;
-  }
-  
-  .homeLink {
-    display: inline-block;
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #0066cc;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-  }
-  
-  .homeLink:hover {
-    background-color: #004d99;
-  }
-  
-  /* Стили шапки события */
-  .eventHeader {
-    text-align: center;
-    margin-bottom: 2.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .eventTitle {
-    font-size: 2.5rem;
-    color: #222;
-    margin-bottom: 0.5rem;
-  }
-  
-  .eventSubtitle {
-    font-size: 1.2rem;
-    color: #666;
-    font-style: italic;
-  }
-  
-  /* Стили для изображения */
-  .eventImage {
-    width: 100%;
-    max-height: 500px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Стили для деталей события */
+}
+
+.errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(
+      177.2deg,
+      #cfc0e5 0.07%,
+      #7850f0 49.56%,
+      #e9c8ff 100%
+  );
+  padding: 20px;
+}
+
+.errorContent {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 3rem;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.errorContent h2 {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.homeLink {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #7850f0;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.homeLink:hover {
+  background-color: #5e3ac7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(120, 80, 240, 0.3);
+}
+
+.eventHeader {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.eventTitle {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.eventSubtitle {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.eventImageContainer {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.eventImage {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.eventImage:hover {
+  transform: scale(1.02);
+}
+
+.eventDetails {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  margin: 2rem 0;
+  grid-template-areas: 
+      "info des"
+      "rev rev";
+}
+
+@media (max-width: 768px) {
   .eventDetails {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    margin: 2rem 0;
-    grid-template-areas: "info des"
-    "rev rev";
-  }
-  
-  @media (max-width: 768px) {
-    .eventDetails {
       grid-template-columns: 1fr;
-    }
+      grid-template-areas: 
+          "info"
+          "des"
+          "rev";
   }
-  
-  /* Стили для информационной сетки */
-  .infoGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-   
-  }
-  
-  .infoItem {
-    background: #f8f9fa;
-    padding: 1.2rem;
-    border-radius: 6px;
-    border-left: 4px solid #0066cc;
-  }
-  
-  .infoLabel {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #555;
-  }
-  
-  .infoValue {
-    font-size: 1.1rem;
-  }
-  
-  /* Стили для описания */
-  .eventDescription {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 6px;
-     grid-area: des;
-  }
-  
-  .sectionTitle {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #222;
-    border-bottom: 2px solid #0066cc;
-    padding-bottom: 0.5rem;
-    display: inline-block;
-  }
-  
-  .descriptionText {
-    line-height: 1.6;
-    font-size: 1.1rem;
-  }
-  
-  /* Стили для кнопки */
-  .eventActions {
-    text-align: center;
-    margin-top: 2rem;
-display: flex;
-justify-content: space-evenly;
-  }
-  
-  .buyButton {
-    background: #0066cc;
-    color: white;
-    padding: 1rem 2.5rem;
-    border: none;
-    border-radius: 4px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .buyButton:hover {
-    background: #004d99;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
-  
-  .buyButton:active {
-    transform: translateY(0);
-  }
-
-
-/* отзывы */
-
-.eventReview {
-    grid-area: rev;
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 6px;
 }
 
 .eventInfo {
-    grid-area: info;
+  grid-area: info;
+  background-color: rgba(248, 249, 250, 0.7);
+  padding: 1.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
 }
 
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
-.modal {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.infoItem {
+  background-color: white;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #7850f0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.modalFormGroup {
-    margin: 15px 0;
+.infoItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.modalInput {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.infoLabel {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-size: 0.9rem;
 }
 
-.modalPrice {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin: 15px 0;
-    text-align: center;
+.infoValue {
+  font-size: 1.1rem;
+  color: #2c3e50;
+  font-weight: 500;
 }
 
-.modalActions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+.eventDescription {
+  grid-area: des;
+  background-color: rgba(248, 249, 250, 0.7);
+  padding: 1.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
 }
 
-.modalConfirmButton {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.sectionTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 0.5rem;
 }
 
-.modalCancelButton {
-    background-color: #f44336;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background-color: #7850f0;
+  border-radius: 3px;
 }
 
+.descriptionText {
+  line-height: 1.7;
+  color: #34495e;
+  font-size: 1.05rem;
+}
 
-.notification {
-    padding: 1rem;
-    background-color: #3d6896;
-    color: white;
-    border-radius: 4px;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    animation: fadeIn 0.3s;
-  }
-
-
-  /* Reviews Section */
 .eventReview {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.reviewList {
-    margin-top: 1.5rem;
-}
-
-.reviewItem {
-    padding: 1rem;
-    margin-bottom: 1rem;
-    background-color: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-}
-
-.reviewItem:hover {
-    transform: translateY(-2px);
+  grid-area: rev;
+  background-color: rgba(248, 249, 250, 0.7);
+  padding: 1.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  margin-top: 1rem;
 }
 
 .reviewHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-.reviewAuthor {
-    font-weight: 600;
-    color: #333;
-}
-
-.reviewDate {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-.reviewContent {
-    color: #495057;
-    line-height: 1.5;
-}
-
-.noReviews {
-    text-align: center;
-    padding: 2rem;
-    color: #6c757d;
-    font-style: italic;
-}
-
-/* Add Review Button */
 .addReviewButton {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  padding: 0.75rem 1.5rem;
+  background-color: #7850f0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .addReviewButton:hover {
-    background-color: #0069d9;
+  background-color: #5e3ac7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(120, 80, 240, 0.3);
 }
 
-/* Review Form (можно добавить позже) */
-.reviewForm {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background-color: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.reviewList {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1rem;
 }
-  
+
+.reviewItem {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reviewItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.reviewAuthorInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.reviewAuthor {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.reviewStars {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.starFilled {
+  color: #f1c40f;
+}
+
+.starEmpty {
+  color: #ddd;
+}
+
+.reviewDate {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
+.reviewContent {
+  margin-top: 1rem;
+  color: #34495e;
+  line-height: 1.6;
+}
+
+.noReviews {
+  text-align: center;
+  padding: 2rem;
+  color: #7f8c8d;
+  font-style: italic;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.eventActions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.buyButton {
+  padding: 1rem 2.5rem;
+  background-color: #7850f0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(120, 80, 240, 0.3);
+}
+
+.buyButton:hover {
+  background-color: #5e3ac7;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(120, 80, 240, 0.4);
+}
+
+.buyButton:active {
+  transform: translateY(0);
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+      opacity: 0;
+      transform: translateY(20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #7f8c8d;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #e74c3c;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.modalSubtitle {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formLabel {
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.input {
+  padding: 0.9rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #7850f0;
+  box-shadow: 0 0 0 3px rgba(120, 80, 240, 0.2);
+}
+
+.textarea {
+  padding: 0.9rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #7850f0;
+  box-shadow: 0 0 0 3px rgba(120, 80, 240, 0.2);
+}
+
+.starsInput {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.radioInput {
+  display: none;
+}
+
+.starLabel {
+  font-size: 1.8rem;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.radioInput:checked + .starLabel,
+.radioInput:checked ~ .starLabel,
+.starLabel:hover,
+.starLabel:hover ~ .starLabel {
+  color: #f1c40f;
+}
+
+.paymentDetails {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.paymentTitle {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.cardInfoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .cardInfoRow {
+      grid-template-columns: 1fr;
+  }
+}
+
+.totalPrice {
+  font-size: 1.2rem;
+  text-align: right;
+  margin: 1.5rem 0;
+  font-weight: 500;
+}
+
+.totalPrice span {
+  font-weight: 700;
+  color: #7850f0;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.primaryButton {
+  padding: 0.8rem 1.5rem;
+  background-color: #7850f0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primaryButton:hover {
+  background-color: #5e3ac7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(120, 80, 240, 0.3);
+}
+
+.secondaryButton {
+  padding: 0.8rem 1.5rem;
+  background-color: #f8f9fa;
+  color: #2c3e50;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background-color: #e9ecef;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notification {
+  padding: 1rem;
+  background-color: #2ecc71;
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.reviewNotification {
+  padding: 1rem;
+  background-color: #2ecc71;
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}

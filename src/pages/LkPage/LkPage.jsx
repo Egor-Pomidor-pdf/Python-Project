@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import cl from "./LkPage.module.css";
 import { useNavigate } from 'react-router-dom';
+import { FiEdit, FiX, FiPlus, FiArrowLeft } from 'react-icons/fi';
 
 
 const LkPage = () => {
@@ -116,148 +117,197 @@ const LkPage = () => {
     }, [navigate])
 
     return (
-        <div className={cl.container}>
-            <h1 className={cl.title}>Личный кабинет</h1>
+        <div className={cl.appContainer}>
+            <div className={cl.container}>
+                <h1 className={cl.title}>Личный кабинет</h1>
 
-            {notification && (
-                <div className={cl.notification}>
-                    {notification}
-                </div>
-            )}
+                {notification && (
+                    <div className={`${cl.notification} ${notification.includes('Ошибка') ? cl.error : cl.success}`}>
+                        {notification}
+                    </div>
+                )}
 
-            <section className={cl.section}>
-                <h2 className={cl.sectionTitle}>Личные данные</h2>
-                <div className={cl.userData}>
-                    {isEditing ? (
-                        <>
-                            <div className={cl.formGroup}>
-                                <label className={cl.label}>Имя:</label>
-                                <input
-                                    className={cl.input}
-                                    name="first_name"
-                                    value={userData.first_name}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className={cl.formGroup}>
-                                <label className={cl.label}>Фамилия:</label>
-                                <input
-                                    className={cl.input}
-                                    name="last_name"
-                                    value={userData.last_name}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className={cl.formGroup}>
-                                <label className={cl.label}>Email:</label>
-                                <input
-                                    className={cl.input}
-                                    name="email"
-                                    value={userData.email}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className={cl.formGroup}>
-                                <label className={cl.label}>Предпочтения:</label>
-                                <div className={cl.preferencesContainer}>
-                                    {userData.preferences.map((pref, index) => (
-                                        <div key={index} className={cl.preferenceItem}>
-                                            <span>{pref}</span>
-                                            <button
-                                                type="button"
-                                                className={cl.removePreference}
-                                                onClick={() => handleRemovePreference(pref)}
-                                            >
-                                             
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className={cl.addPreference}>
-                                    <select
-                                        className={cl.preferenceSelect}
-                                        value={newPreference}
-                                        onChange={(e) => setNewPreference(e.target.value)}
-                                    >
-                                        <option value="">Выберите предпочтение</option>
-                                        {preferenceOptions.map(option => (
-                                            <option key={option} value={option}>
-                                                {option}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <button
-                                        type="button"
-                                        className={cl.addButton}
-                                        onClick={handleAddPreference}
-                                    >
-                                        Добавить
-                                    </button>
-                                </div>
-                            </div>
-                            <div className={cl.buttonGroup}>
-                                <button className={`${cl.button} ${cl.saveButton}`} onClick={handleSave}>
-                                    Сохранить
-                                </button>
-                                <button className={`${cl.button} ${cl.cancelButton}`} onClick={() => setIsEditing(false)}>
-                                    Отмена
-                                </button>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <p className={cl.userInfo}><strong>Имя:</strong> {userData.first_name}</p>
-                            <p className={cl.userInfo}><strong>Фамилия:</strong> {userData.last_name}</p>
-                            <p className={cl.userInfo}><strong>Email:</strong> {userData.email}</p>
-                            <p className={cl.userInfo}>
-                                <strong>Предпочтения:</strong>
-                                {userData.preferences.length > 0
-                                    ? userData.preferences.join(', ')
-                                    : 'Нет выбранных предпочтений'}
-                            </p>
-                            <button className={cl.button} onClick={() => setIsEditing(true)}>
+                <section className={cl.section}>
+                    <div className={cl.sectionHeader}>
+                        <h2 className={cl.sectionTitle}>Личные данные</h2>
+                        {!isEditing && (
+                            <button 
+                                className={cl.editButton}
+                                onClick={() => setIsEditing(true)}
+                            >
+                                <FiEdit className={cl.icon} />
                                 Редактировать
                             </button>
-                        </>
-                    )}
-                </div>
-            </section>
-
-            <section className={cl.section}>
-                <h2 className={cl.sectionTitle}>Мои билеты</h2>
-                    {tickets.length === 0 ? ( 
-                        <p className={cl.noTickets}>У вас пока нет купленных билетов</p>
-                    ):
-                    (
-                        <div className={cl.ticketsList}>
-                        {tickets.map(ticket => (
-                            <div key={ticket.id} className={cl.ticket}>
-                                <div className={cl.ticketInfo}>
-                                    <p><strong>Мероприятие:</strong> {ticket.event_name}</p>
-                                    <p><strong>Дата:</strong> {new Date(ticket.event_date).toLocaleString()}</p>
-                                    <p><strong>Место:</strong> {ticket.event_city}</p>
-                                    <p><strong>Цена:</strong> {ticket.amount} ₽</p>
-                                    <p><strong>Куплен:</strong> {new Date(ticket.transaction_date).toLocaleString()}</p>
+                        )}
+                    </div>
+                    
+                    <div className={cl.card}>
+                        {isEditing ? (
+                            <>
+                                <div className={cl.formGroup}>
+                                    <label className={cl.label}>Имя</label>
+                                    <input
+                                        className={cl.input}
+                                        name="first_name"
+                                        value={userData.first_name}
+                                        onChange={handleInputChange}
+                                        placeholder="Введите ваше имя"
+                                    />
                                 </div>
-            
+                                <div className={cl.formGroup}>
+                                    <label className={cl.label}>Фамилия</label>
+                                    <input
+                                        className={cl.input}
+                                        name="last_name"
+                                        value={userData.last_name}
+                                        onChange={handleInputChange}
+                                        placeholder="Введите вашу фамилию"
+                                    />
+                                </div>
+                                <div className={cl.formGroup}>
+                                    <label className={cl.label}>Email</label>
+                                    <input
+                                        className={cl.input}
+                                        name="email"
+                                        value={userData.email}
+                                        onChange={handleInputChange}
+                                        type="email"
+                                        placeholder="Введите ваш email"
+                                    />
+                                </div>
+                                
+                                <div className={cl.formGroup}>
+                                    <label className={cl.label}>Предпочтения</label>
+                                    <div className={cl.preferencesContainer}>
+                                        {userData.preferences.map((pref, index) => (
+                                            <div key={index} className={cl.preferenceItem}>
+                                                <span>{pref}</span>
+                                                <button
+                                                    type="button"
+                                                    className={cl.removePreference}
+                                                    onClick={() => handleRemovePreference(pref)}
+                                                >
+                                                    <FiX className={cl.icon} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className={cl.addPreference}>
+                                        <select
+                                            className={cl.preferenceSelect}
+                                            value={newPreference}
+                                            onChange={(e) => setNewPreference(e.target.value)}
+                                        >
+                                            <option value="">Выберите предпочтение</option>
+                                            {preferenceOptions.map(option => (
+                                                <option key={option} value={option}>
+                                                    {option}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            type="button"
+                                            className={cl.addButton}
+                                            onClick={handleAddPreference}
+                                        >
+                                            <FiPlus className={cl.icon} />
+                                            Добавить
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div className={cl.buttonGroup}>
+                                    <button className={`${cl.button} ${cl.cancelButton}`} onClick={() => setIsEditing(false)}>
+                                        <FiArrowLeft className={cl.icon} />
+                                        Отмена
+                                    </button>
+                                    <button className={`${cl.button} ${cl.saveButton}`} onClick={handleSave}>
+                                        Сохранить изменения
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className={cl.userInfoItem}>
+                                    <span className={cl.infoLabel}>Имя:</span>
+                                    <span className={cl.infoValue}>{userData.first_name || 'Не указано'}</span>
+                                </div>
+                                <div className={cl.userInfoItem}>
+                                    <span className={cl.infoLabel}>Фамилия:</span>
+                                    <span className={cl.infoValue}>{userData.last_name || 'Не указана'}</span>
+                                </div>
+                                <div className={cl.userInfoItem}>
+                                    <span className={cl.infoLabel}>Email:</span>
+                                    <span className={cl.infoValue}>{userData.email}</span>
+                                </div>
+                                <div className={cl.userInfoItem}>
+                                    <span className={cl.infoLabel}>Предпочтения:</span>
+                                    <div className={cl.preferencesList}>
+                                        {userData.preferences.length > 0 ? (
+                                            userData.preferences.map((pref, i) => (
+                                                <span key={i} className={cl.preferenceTag}>{pref}</span>
+                                            ))
+                                        ) : (
+                                            <span className={cl.noPreferences}>Нет выбранных предпочтений</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </section>
+
+                <section className={cl.section}>
+                    <h2 className={cl.sectionTitle}>Мои билеты</h2>
+                    {tickets.length === 0 ? (
+                        <div className={cl.emptyState}>
+                            {/* <img src="/images/no-tickets.svg" alt="Нет билетов" className={cl.emptyImage} /> */}
+                            <p className={cl.emptyText}>У вас пока нет купленных билетов</p>
+                            <button 
+                                className={cl.browseButton}
+                                onClick={() => navigate('/events')}
+                            >
+                                Посмотреть мероприятия
+                            </button>
+                        </div>
+                    ) : (
+                        <div className={cl.ticketsGrid}>
+                            {tickets.map(ticket => (
+                                <div key={ticket.id} className={cl.ticketCard}>
+                                    <div className={cl.ticketHeader}>
+                                        <h3 className={cl.eventName}>{ticket.event_name}</h3>
+                                        <span className={cl.ticketPrice}>{ticket.amount} ₽</span>
+                                    </div>
+                                    
+                                    <div className={cl.ticketDetails}>
+                                        <div className={cl.detailItem}>
+                                            <span className={cl.detailLabel}>Дата мероприятия:</span>
+                                            <span className={cl.detailValue}>{new Date(ticket.event_date).toLocaleString()}</span>
+                                        </div>
+                                        <div className={cl.detailItem}>
+                                            <span className={cl.detailLabel}>Место:</span>
+                                            <span className={cl.detailValue}>{ticket.event_city}</span>
+                                        </div>
+                                        <div className={cl.detailItem}>
+                                            <span className={cl.detailLabel}>Дата покупки:</span>
+                                            <span className={cl.detailValue}>{new Date(ticket.transaction_date).toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    
                                     <button
-                                        className={`${cl.button} ${cl.refundButton}`}
+                                        className={cl.refundButton}
                                         onClick={() => handleRefund(ticket.transaction_id)}
                                     >
                                         Вернуть билет
                                     </button>
-                        
-                            </div>
-                        ))}
-                    </div>
-                    )
-                        
-                    }
-            </section>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            </div>
         </div>
     );
 };
 
 export default LkPage;
-
-

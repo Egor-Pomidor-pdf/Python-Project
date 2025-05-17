@@ -10,14 +10,11 @@ const Navabar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Очищаем данные авторизации
     setIsAuth(false);
     localStorage.removeItem("auth");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
     delete axios.defaults.headers.common['Authorization'];
-    
-    // Перенаправляем на страницу входа
     navigate("/login");
   };
 
@@ -31,8 +28,7 @@ const Navabar = () => {
           </div>
         </Link>
         <div className={cl.navabar__links__logAndReg}>
-          {/* Для авторизованных пользователей */}
-          {isAuth && (
+          {isAuth ? (
             <>
               <Link 
                 className={`${cl.navabar__links__item} ${cl.navabar__links__item_reg}`} 
@@ -53,10 +49,7 @@ const Navabar = () => {
                 Выйти
               </button>
             </>
-          )}
-          
-          {/* Для неавторизованных пользователей */}
-          {!isAuth && (
+          ) : (
             <>
               <Link 
                 className={`${cl.navabar__links__item} ${cl.navabar__links__item_reg}`} 

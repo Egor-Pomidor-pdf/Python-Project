@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import cl from "./EventPage.module.css";
 import def from "./image/telegram-cloud-photo-size-2-5206223897693908661-y.jpg";
-import PostWithTitle from '../../components/PostWithTitle';
 
 const EventPage = () => {
     const location = useLocation();
@@ -32,17 +31,14 @@ const EventPage = () => {
                 }
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-                const responseRev = await axios.get(`/events/reviews/${eventData.id}`)
-
+                const responseRev = await axios.get(`/events/reviews/${eventData.id}`);
+                setReviews(responseRev.data);
             } catch (error) {
                 console.error(error);
-
             }
-            
-        }
+        };
         fetchReviews();
-    }
-    , [])
+    }, [eventData?.id, navigate]);
 
     const ticketBook = () => {
         setIsModalOpen(true);
@@ -57,30 +53,10 @@ const EventPage = () => {
         setCvv("");
     };
 
-    useEffect(() => {
-        const fetchReviews = async () => {
-            try {
-                const token = localStorage.getItem('accessToken');
-                
-                if (!token) {
-                    navigate('/login');
-                    return;
-                }
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-                const responseRev = await axios.get(`/events/reviews/${eventData.id}`);
-                setReviews(responseRev.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchReviews();
-    }, [eventData.id, navigate]);
-
-
     const openReviewModal = () => {
         setIsReviewModalOpen(true);
     };
+
     const closeReviewModal = () => {
         setIsReviewModalOpen(false);
         setComment("");
@@ -92,25 +68,12 @@ const EventPage = () => {
         const userId = localStorage.getItem('userId');
         
         try {
-            const formData = new URLSearchParams();
-            formData.append('user_id', userId); // user_id передается как form-data
-            
-            const reviewData = {
-                event_id: eventData.id, // event_id передается в JSON
-                comment: comment,      // comment передается в JSON
-            };
-
-            const rateData = {
-                event_id: eventData.id,
-                user_id: userId,
-                score,
-            }
-    
             const token = localStorage.getItem('accessToken');
             if (!token) {
                 navigate('/login');
                 return;
             }
+
             await axios.post("/events/rate", null, {
                 params: {
                     user_id: userId,
@@ -122,19 +85,23 @@ const EventPage = () => {
                     'Accept': 'application/json',
                 },
             });
-    
+
+            const reviewData = {
+                event_id: eventData.id,
+                comment: comment,
+            };
+
             await axios.post("/events/review", reviewData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json', // Основное тело - JSON
+                    'Content-Type': 'application/json',
                 },
-                params: formData // user_id передается как параметр URL
+                params: { user_id: userId }
             });
-    
+
             setReviewNotification('Отзыв успешно отправлен!');
             setTimeout(() => setReviewNotification(''), 3000);
             
-            // Обновляем список отзывов
             const responseRev = await axios.get(`/events/reviews/${eventData.id}`);
             setReviews(responseRev.data);
             
@@ -170,253 +137,298 @@ const EventPage = () => {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
             await axios.post("/booking/book-ticket", bookingTicket);
-            setNotification('Билет куплен');
+            setNotification('Билет успешно куплен!');
             setTimeout(() => setNotification(''), 3000);
+            closeModal();
         } catch (error) {
-            console.error("ОШИБКА", error);
-            if (error.response) {
-                console.log("Ответ от сервера:", error.response.data);
-                setNotification('ОШИБКА');
-            }
+            console.error("Ошибка:", error);
+            setNotification(error.response?.data?.message || 'Ошибка при покупке билета');
+            setTimeout(() => setNotification(''), 3000);
         }
     };
 
     if (!eventData) {
-        return <div className="error-message">
-            <h2>Данные не загружены</h2>
-            <p>Пожалуйста, перейдите к событию через главную страницу</p>
-            <Link to="/home">На главную</Link>
-        </div>
+        return (
+            <div className={cl.errorContainer}>
+                <div className={cl.errorContent}>
+                    <h2>Данные не загружены</h2>
+                    <p>Пожалуйста, перейдите к событию через главную страницу</p>
+                    <Link to="/home" className={cl.homeLink}>На главную</Link>
+                </div>
+            </div>
+        );
     }
 
-
-
-
     return (
-        <div className={cl.eventContainer}>
+        <div className={cl.background}>
+            <div className={cl.eventContainer}>
+                <header className={cl.eventHeader}>
+                    <h1 className={cl.eventTitle}>{eventData.name}</h1>
+                    <p className={cl.eventSubtitle}>{eventData.tit}</p>
+                </header>
 
-            <header className={cl.eventHeader}>
-                <h1 className={cl.eventTitle}>{eventData.name}</h1>
-                <p className={cl.eventSubtitle}>{eventData.tit}</p>
-            </header>
-
-            <div className={cl.eventImage}>
-                <img
-                    src={eventData.image || def}
-                    alt={eventData.name}
-                    className={cl.eventImage}
-                />
-            </div>
-
-            <div className={cl.eventDetails}>
-                <section className={cl.eventInfo}>
-                    <h2 className={cl.sectionTitle}>Информация о мероприятии</h2>
-                    <div className={cl.infoGrid}>
-                        <div className={cl.infoItem}>
-                            <span className={cl.infoLabel}>Дата:</span>
-                            <span className={cl.infoValue}>
-                                {new Date(eventData.date).toLocaleDateString()}
-                            </span>
-                        </div>
-                        <div className={cl.infoItem}>
-                            <span className={cl.infoLabel}>Город:</span>
-                            <span className={cl.infoValue}>{eventData.city}</span>
-                        </div>
-                        <div className={cl.infoItem}>
-                            <span className={cl.infoLabel}>Цена:</span>
-                            <span className={cl.infoValue}>{eventData.price} ₽</span>
-                        </div>
-                        <div className={cl.infoItem}>
-                            <span className={cl.infoLabel}>Доступно билетов:</span>
-                            <span className={cl.infoValue}>{eventData.available_tickets}</span>
-                        </div>
-                    </div>
-                </section>
-
-                <section className={cl.eventDescription}>
-                    <h2 className={cl.sectionTitle}>Описание</h2>
-                    <p className={cl.descriptionText}>{eventData.description}</p>
-                </section>
-
-                <section className={cl.eventReview}>
-                <h2 className={cl.sectionTitle}>Отзывы</h2>
-                {reviewNotification && (
-                    <div className={cl.reviewNotification}>
-                        {reviewNotification}
-                    </div>
-                )}
-                {reviews.length > 0 ? (
-                    <div className={cl.reviewList}>
-                        {reviews.map((review) => (
-                            <div key={review.id} className={cl.reviewItem}>
-                                <div className={cl.reviewHeader}>
-                                    <div>
-                                        <span className={cl.reviewAuthor}>{review.username || "Аноним"}</span>
-                                        <span className={cl.reviewScore}>Оценка: {review.score}5</span>
-                                    </div>
-                                    <span className={cl.reviewDate}>
-                                        {new Date(review.created_at).toLocaleDateString()}
-                                    </span>
-                                </div>
-                                <div className={cl.reviewContent}>{review.comment}</div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className={cl.noReviews}>Пока нет отзывов. Будьте первым!</div>
-                )}
-                <button onClick={openReviewModal} className={cl.addReviewButton}>Оставить отзыв</button>
-            </section>
-            </div>
-
-            <div className={cl.eventActions}>
-                <button onClick={ticketBook} className={cl.buyButton}>Купить билет</button>
-            </div>
-
-            {isReviewModalOpen && (
-                <div className={cl.modalOverlay}>
-                    <div className={cl.reviewModal}>
-                        <h2>Оставить отзыв</h2>
-                        <form onSubmit={sendReview} className={cl.reviewForm}>
-                            <div className={cl.modalFormGroup}>
-                                <label>Оценка (1-5):</label>
-                                <select
-                                    value={score}
-                                    onChange={(e) => setScore(Number(e.target.value))}
-                                    className={cl.modalInput}
-                                    required
-                                >
-                                    {[1, 2, 3, 4, 5].map(num => (
-                                        <option key={num} value={num}>{num}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className={cl.modalFormGroup}>
-                                <label>Комментарий:</label>
-                                <textarea
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                    className={cl.modalTextarea}
-                                    required
-                                />
-                            </div>
-                            <div className={cl.modalActions}>
-                                <button
-                                    type="submit"
-                                    className={cl.modalConfirmButton}
-                                >
-                                    Отправить
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={closeReviewModal}
-                                    className={cl.modalCancelButton}
-                                >
-                                    Отмена
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                <div className={cl.eventImageContainer}>
+                    <img
+                        src={eventData.image_url || def}
+                        alt={eventData.name}
+                        className={cl.eventImage}
+                    />
                 </div>
-            )}
 
+                <div className={cl.eventDetails}>
+                    <section className={cl.eventInfo}>
+                        <h2 className={cl.sectionTitle}>Информация</h2>
+                        <div className={cl.infoGrid}>
+                            <div className={cl.infoItem}>
+                                <span className={cl.infoLabel}>Дата:</span>
+                                <span className={cl.infoValue}>
+                                    {new Date(eventData.date).toLocaleDateString('ru-RU', {
+                                        day: 'numeric',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    })}
+                                </span>
+                            </div>
+                            <div className={cl.infoItem}>
+                                <span className={cl.infoLabel}>Город:</span>
+                                <span className={cl.infoValue}>{eventData.city}</span>
+                            </div>
+                            <div className={cl.infoItem}>
+                                <span className={cl.infoLabel}>Цена:</span>
+                                <span className={cl.infoValue}>{eventData.price} ₽</span>
+                            </div>
+                            <div className={cl.infoItem}>
+                                <span className={cl.infoLabel}>Доступно:</span>
+                                <span className={cl.infoValue}>{eventData.available_tickets} билетов</span>
+                            </div>
+                        </div>
+                    </section>
 
-            {isModalOpen && (
-                <div className={cl.modalOverlay}>
-                    <div className={cl.modal}>
-                        {notification && (
-                            <div className={cl.notification}>
-                                {notification}
+                    <section className={cl.eventDescription}>
+                        <h2 className={cl.sectionTitle}>Описание</h2>
+                        <p className={cl.descriptionText}>{eventData.description}</p>
+                    </section>
+
+                    <section className={cl.eventReview}>
+                        <div className={cl.reviewHeader}>
+                            <h2 className={cl.sectionTitle}>Отзывы</h2>
+                            <button onClick={openReviewModal} className={cl.addReviewButton}>
+                                Оставить отзыв
+                            </button>
+                        </div>
+                        
+                        {reviewNotification && (
+                            <div className={cl.reviewNotification}>
+                                {reviewNotification}
                             </div>
                         )}
-                        <h2>Покупка билетов</h2>
-                        <p>Вы выбрали: {eventData.name}</p>
-
-                        <form onSubmit={bookFormSend} className={cl.modalForm}>
-                            <div className={cl.modalFormGroup}>
-                                <label>Количество билетов:</label>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    max={eventData.available_tickets}
-                                    value={ticketCount}
-                                    onChange={(e) => setTicketCount(Number(e.target.value))}
-                                    className={cl.modalInput}
-                                    required
-                                />
+                        
+                        {reviews.length > 0 ? (
+                            <div className={cl.reviewList}>
+                                {reviews.map((review) => (
+                                    <div key={review.id} className={cl.reviewItem}>
+                                        <div className={cl.reviewHeader}>
+                                            <div className={cl.reviewAuthorInfo}>
+                                                <span className={cl.reviewAuthor}>{review.username || "Аноним"}</span>
+                                                <div className={cl.reviewStars}>
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <span key={i} className={i < review.score ? cl.starFilled : cl.starEmpty}>★</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <span className={cl.reviewDate}>
+                                                {new Date(review.created_at).toLocaleDateString('ru-RU')}
+                                            </span>
+                                        </div>
+                                        <div className={cl.reviewContent}>{review.comment}</div>
+                                    </div>
+                                ))}
                             </div>
-
-                            <div className={cl.modalFormGroup}>
-                                <label>Номер карты:</label>
-                                <input
-                                    type="text"
-                                    value={cardNumber}
-                                    onChange={(e) => setCardNumber(e.target.value)}
-                                    placeholder="Введите номер карты"
-                                    className={cl.modalInput}
-                                    required
-                                />
-                            </div>
-
-                            <div className={cl.modalFormGroup}>
-                                <label>Срок действия:</label>
-                                <input
-                                    type="text"
-                                    value={expiryDate}
-                                    onChange={(e) => setExpiryDate(e.target.value)}
-                                    placeholder="ММ/ГГ"
-                                    className={cl.modalInput}
-                                    required
-                                />
-                            </div>
-
-                            <div className={cl.modalFormGroup}>
-                                <label>Имя владельца:</label>
-                                <input
-                                    type="text"
-                                    value={cardHolder}
-                                    onChange={(e) => setCardHolder(e.target.value)}
-                                    placeholder="Введите имя как на карте"
-                                    className={cl.modalInput}
-                                    required
-                                />
-                            </div>
-
-                            <div className={cl.modalFormGroup}>
-                                <label>CVV код:</label>
-                                <input
-                                    type="text"
-                                    value={cvv}
-                                    onChange={(e) => setCvv(e.target.value)}
-                                    placeholder="CVV"
-                                    className={cl.modalInput}
-                                    required
-                                />
-                            </div>
-
-                            <div className={cl.modalPrice}>
-                                Итого: {eventData.price * ticketCount} ₽
-                            </div>
-
-                            <div className={cl.modalActions}>
-                                <button
-                                    type="submit"
-                                    className={cl.modalConfirmButton}
-                                >
-                                    Подтвердить
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={closeModal}
-                                    className={cl.modalCancelButton}
-                                >
-                                    Отмена
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        ) : (
+                            <div className={cl.noReviews}>Пока нет отзывов. Будьте первым!</div>
+                        )}
+                    </section>
                 </div>
-            )}
+
+                <div className={cl.eventActions}>
+                    <button onClick={ticketBook} className={cl.buyButton}>
+                        Купить билет
+                    </button>
+                </div>
+
+                {isReviewModalOpen && (
+                    <div className={cl.modalOverlay}>
+                        <div className={cl.modal}>
+                            <button className={cl.closeButton} onClick={closeReviewModal}>×</button>
+                            <h2 className={cl.modalTitle}>Оставить отзыв</h2>
+                            <form onSubmit={sendReview} className={cl.modalForm}>
+                                <div className={cl.formGroup}>
+                                    <label className={cl.formLabel}>Ваша оценка</label>
+                                    <div className={cl.starsInput}>
+                                        {[1, 2, 3, 4, 5].map((num) => (
+                                            <React.Fragment key={num}>
+                                                <input
+                                                    type="radio"
+                                                    id={`star-${num}`}
+                                                    name="rating"
+                                                    value={num}
+                                                    checked={score === num}
+                                                    onChange={() => setScore(num)}
+                                                    className={cl.radioInput}
+                                                />
+                                                <label
+                                                    htmlFor={`star-${num}`}
+                                                    className={cl.starLabel}
+                                                >
+                                                    ★
+                                                </label>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                <div className={cl.formGroup}>
+                                    <label htmlFor="comment" className={cl.formLabel}>Комментарий</label>
+                                    <textarea
+                                        id="comment"
+                                        value={comment}
+                                        onChange={(e) => setComment(e.target.value)}
+                                        className={cl.textarea}
+                                        rows="5"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className={cl.modalActions}>
+                                    <button
+                                        type="button"
+                                        onClick={closeReviewModal}
+                                        className={cl.secondaryButton}
+                                    >
+                                        Отмена
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className={cl.primaryButton}
+                                    >
+                                        Отправить отзыв
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {isModalOpen && (
+                    <div className={cl.modalOverlay}>
+                        <div className={cl.modal}>
+                            <button className={cl.closeButton} onClick={closeModal}>×</button>
+                            <h2 className={cl.modalTitle}>Покупка билетов</h2>
+                            <p className={cl.modalSubtitle}>{eventData.name}</p>
+                            
+                            {notification && (
+                                <div className={cl.notification}>
+                                    {notification}
+                                </div>
+                            )}
+                            
+                            <form onSubmit={bookFormSend} className={cl.modalForm}>
+                                <div className={cl.formGroup}>
+                                    <label htmlFor="ticketCount" className={cl.formLabel}>Количество билетов</label>
+                                    <input
+                                        id="ticketCount"
+                                        type="number"
+                                        min="1"
+                                        max={eventData.available_tickets}
+                                        value={ticketCount}
+                                        onChange={(e) => setTicketCount(Number(e.target.value))}
+                                        className={cl.input}
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className={cl.paymentDetails}>
+                                    <h3 className={cl.paymentTitle}>Данные карты</h3>
+                                    
+                                    <div className={cl.formGroup}>
+                                        <label htmlFor="cardNumber" className={cl.formLabel}>Номер карты</label>
+                                        <input
+                                            id="cardNumber"
+                                            type="text"
+                                            value={cardNumber}
+                                            onChange={(e) => setCardNumber(e.target.value)}
+                                            placeholder="1234 5678 9012 3456"
+                                            className={cl.input}
+                                            required
+                                        />
+                                    </div>
+                                    
+                                    <div className={cl.cardInfoRow}>
+                                        <div className={cl.formGroup}>
+                                            <label htmlFor="expiryDate" className={cl.formLabel}>Срок действия</label>
+                                            <input
+                                                id="expiryDate"
+                                                type="text"
+                                                value={expiryDate}
+                                                onChange={(e) => setExpiryDate(e.target.value)}
+                                                placeholder="ММ/ГГ"
+                                                className={cl.input}
+                                                required
+                                            />
+                                        </div>
+                                        
+                                        <div className={cl.formGroup}>
+                                            <label htmlFor="cvv" className={cl.formLabel}>CVV</label>
+                                            <input
+                                                id="cvv"
+                                                type="text"
+                                                value={cvv}
+                                                onChange={(e) => setCvv(e.target.value)}
+                                                placeholder="123"
+                                                className={cl.input}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className={cl.formGroup}>
+                                        <label htmlFor="cardHolder" className={cl.formLabel}>Имя владельца</label>
+                                        <input
+                                            id="cardHolder"
+                                            type="text"
+                                            value={cardHolder}
+                                            onChange={(e) => setCardHolder(e.target.value)}
+                                            placeholder="IVAN IVANOV"
+                                            className={cl.input}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className={cl.totalPrice}>
+                                    Итого: <span>{eventData.price * ticketCount} ₽</span>
+                                </div>
+                                
+                                <div className={cl.modalActions}>
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        className={cl.secondaryButton}
+                                    >
+                                        Отмена
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className={cl.primaryButton}
+                                    >
+                                        Подтвердить покупку
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

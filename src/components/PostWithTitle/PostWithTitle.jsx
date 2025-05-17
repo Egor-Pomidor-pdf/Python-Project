@@ -1,5 +1,6 @@
 import React from "react";
-import Post from "../components/myPost/Post.jsx";
+import Post from "../myPost/Post.jsx";
+import cl from "./PostWithTitle.module.css"
 
 const PostWithTitle = ({ posts, title }) => {
   return (
@@ -18,6 +19,7 @@ const PostWithTitle = ({ posts, title }) => {
             tit={p.title}
             description={p.description}
             average_rating={p.average_rating}
+            image_url={p.image_url}
           />
         );
       }

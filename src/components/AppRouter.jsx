@@ -21,7 +21,7 @@ const AppRouter = () => {
 
 
   const authRoutes = [
-    { path: "/home", element: <HomePage /> },
+    // { path: "/home", element: <HomePage /> },
     { path: "/posts", element: <PostsPage /> },
     { path: "/login", element: <Login /> },
     { path: "/register", element: <RegisterPage /> },
@@ -29,15 +29,16 @@ const AppRouter = () => {
     { path: "/ticketGood", element: <TicketGoodPage /> },
     { path: "/ticketBad", element: <TicketBadPage /> },
     { path: "/event/:id", element: <EventPage /> },
-    { path: "*", element: <Navigate to="/home" replace /> },
+    { path: "*", element: <Navigate to="/posts" replace /> },
     {path: "/lkabinet", element: <LkPage/>},
     {path: "/notifs", element: <NotificationsPage/>}
   ]
 
   const publicRoutes = [
+    { path: "/posts", element: <PostsPage /> },
     { path: "/login", element: <Login /> },
     { path: "/register", element: <RegisterPage /> },
-    { path: "*", element: <Navigate to="/home" replace /> }
+    { path: "*", element: <Navigate to="/posts" replace /> }
   ];
 
 
