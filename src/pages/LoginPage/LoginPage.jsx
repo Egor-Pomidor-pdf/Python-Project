@@ -35,6 +35,7 @@ const Login = () => {
       
       const accessToken = response.data.access_token || response.data.token;
       const userIdentificator = response.data.user_id;
+      const is_specialist = response.data.is_specialist;
       
       if (accessToken) {
         console.log("Вход успешно совершен");
@@ -42,7 +43,12 @@ const Login = () => {
         localStorage.setItem("auth", "true");
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("userId", userIdentificator);
+        localStorage.setItem("is_specialist", is_specialist);
+        if (is_specialist) {
+          alert("Привет, спец")
+        }
         axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        
         navigate("/posts");
       }
     } catch (error) {
@@ -59,6 +65,7 @@ const Login = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
+    localStorage.removeItem("is_specialist");
     delete axios.defaults.headers.common['Authorization'];
     navigate("/login");
   };

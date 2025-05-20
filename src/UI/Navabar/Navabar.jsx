@@ -15,6 +15,7 @@ const Navabar = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
+    localStorage.removeItem("is_specialist")
     delete axios.defaults.headers.common['Authorization'];
     navigate("/login");
   };

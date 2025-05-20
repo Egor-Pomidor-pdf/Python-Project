@@ -11,15 +11,9 @@ const PostWithTitle = ({ posts, title }) => {
   useEffect(() => {
     const checkModeratorStatus = async () => {
       try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return;
-
-        const response = await axios.get("/api/auth/check-moderator", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        setIsModerator(response.data.isModerator);
-        localStorage.setItem("isModerator", response.data.isModerator);
+        const spec = localStorage.getItem("is_specialist");
+        if (spec) { setIsModerator(true);}
+        // setIsModerator(spec === "true");
       } catch (error) {
         console.error("Ошибка проверки прав модератора:", error);
       }
@@ -43,11 +37,7 @@ const PostWithTitle = ({ posts, title }) => {
           description={p.description}
           average_rating={p.average_rating}
           image_url={p.image_url}
-          isModerator={isModerator}
-          onEventUpdated={() => window.location.reload()}
-          onEventDeleted={(deletedId) => {
-            navigate(0);
-          }}
+          isSpecialist={isModerator}
         />
       ))}
     </div>

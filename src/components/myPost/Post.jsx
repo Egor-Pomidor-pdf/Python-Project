@@ -17,40 +17,11 @@ const Post = ({
   average_rating,
   image_url,
   onEventUpdated,
-  onEventDeleted
+  onEventDeleted,
+  isSpecialist,
 }) => {
-  const [isSpecialist, setIsSpecialist] = useState(false);
   const token = localStorage.getItem("accessToken");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkSpecialistStatus = () => {
-      if (!token) {
-        setIsSpecialist(false);
-        return;
-      }
-      
-      // Проверяем статус из localStorage (установленный при входе)
-      const specialistStatus = localStorage.getItem("is_specialist") === "true";
-      setIsSpecialist(specialistStatus);
-    };
-
-    checkSpecialistStatus();
-    
-    // Добавляем слушатель изменения localStorage
-    const handleStorageChange = (e) => {
-      if (e.key === "is_specialist") {
-        setIsSpecialist(e.newValue === "true");
-      }
-      if (e.key === "accessToken" && !e.newValue) {
-        setIsSpecialist(false);
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, [token]);
-
   const renderRating = (rating) => {
     const stars = [];
     const fullStars = rating;
@@ -76,16 +47,14 @@ const Post = ({
 
   const handleArchive = async () => {
   try {
-    const response = await axios.patch(`/${id}/archive`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
+    const response = await axios.patch(`/events/${id}/archive`, {}, {
+      params: {
+        event_id: id,
+        token: token,
+    },
+      headers: { "Authorization": `Bearer ${token}`, }
     });
-
-    if (response.data.is_archived) {
-      onEventDeleted?.(id);
-      alert('Событие успешно архивировано');
-    } else {
-      alert('Не удалось архивировать событие');
-    }
+    alert("мероприятие архивироанр, перезагрузите страницу, чтобы увидеть изменения")
   } catch (error) {
     console.error("Ошибка при архивировании:", error);
     alert(error.response?.data?.message || 'Ошибка архивирования');
@@ -94,30 +63,19 @@ const Post = ({
 
   const handleDelete = async () => {
   try {
-    await axios.delete(`/${id}/delete`, {
-      headers: { Authorization: `Bearer ${token}` }
+    await axios.delete(`/events${id}/delete`, {
+      params: {
+        event_id: id,
+        token: token,
+    },
+      headers: { "Authorization": `Bearer ${token}`, }
     });
-    onEventDeleted?.(id);
+    alert("мероприятие удалено, перезагрузите страницу, чтобы увидеть удаления")
   } catch (error) {
+    alert("не удалилось")
     console.error("Ошибка при удалении:", error);
   }
 };
-
-  const handleEdit = () => {
-    navigate(`/event/${id}/edit`, {
-      state: {
-        id,
-        name,
-        date,
-        city,
-        price,
-        available_tickets,
-        description,
-        image_url
-      }
-    });
-  };
-
   return (
     <div className={cl.post}>
       <img src={image_url} className={cl.post__image} alt={name} />
@@ -187,12 +145,6 @@ const Post = ({
 
           {isSpecialist && (
             <div className={cl.moderatorControls}>
-              <MyTooltip text="Редактировать">
-                <button onClick={handleEdit} className={cl.controlButton}>
-                  <Edit size={18} />
-                </button>
-              </MyTooltip>
-              
               <MyTooltip text="Архивировать">
                 <button onClick={handleArchive} className={cl.controlButton}>
                   <Archive size={18} />
