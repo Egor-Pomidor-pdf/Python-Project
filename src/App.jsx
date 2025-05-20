@@ -4,7 +4,7 @@ import "./styles/App.css";
 import PostWithTitle from "./components/PostWithTitle/PostWithTitle";
 import PostService from "./API/PostService";
 import Navabar from "./UI/Navabar/Navabar";
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/NoUsedPages/HomePage";
 import AppRouter from "./components/AppRouter";
 import { AuthContext } from "./context";
 function App() {

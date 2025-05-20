@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PostWithTitle from "../../components/PostWithTitle/PostWithTitle";
 import MySelect from "../../UI/MySelect/MySelect";
 import Filter from "../../components/Filter/Filter";
-import BookingTicket from "../BookingTicketPage";
+import BookingTicket from "../NoUsedPages/BookingTicketPage";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Neo from "./image/HomeNeoZone.svg";
 import cl from "./PostPage.module.css";
@@ -30,6 +30,7 @@ const PostsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Состояние загрузки
+  const [isInitialLoad, setIsInitialLoad] = useState(true); 
 
   const getRequestParams = () => {
     const params = {
@@ -51,7 +52,9 @@ const PostsPage = () => {
     useEffect(() => {
     const fetchPosts = async () => {
       try {
-        setIsLoading(true); // Включаем загрузку
+        if (isInitialLoad) {
+          setIsLoading(true); // Показываем индикатор только при первоначальной загрузке
+        }
         const params = getRequestParams();
         const response = await axios.get('/events/filter', { params });
 
@@ -61,6 +64,7 @@ const PostsPage = () => {
         console.error('Ошибка загрузки:', error);
       } finally {
         setIsLoading(false); // Выключаем загрузку независимо от результата
+        setIsInitialLoad(false);
       }
     };
 
@@ -168,6 +172,7 @@ const PostsPage = () => {
                 <div className={cl.filterGroup}>
                   <label>Дата</label>
                   <div className={cl.dateFilter}>
+                    <span>от</span>
                     <input
                       type="date"
                       name="date_from"
@@ -175,6 +180,7 @@ const PostsPage = () => {
                       onChange={handleFilterChange}
                       placeholder="Дата от"
                     />
+                     <span>до</span>
                     <input
                       type="date"
                       name="date_to"

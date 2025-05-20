@@ -4,6 +4,7 @@ import { AuthContext } from "../../context";
 import cl from "./Navabar.module.css";
 import logo from "./image/NavabarLogo.svg";
 import axios from "axios";
+import { FaBell } from "react-icons/fa"; // Импортируем иконку колокольчика из react-icons
 
 const Navabar = () => {
   const { isAuth, setIsAuth } = useContext(AuthContext);
@@ -37,10 +38,11 @@ const Navabar = () => {
                 Личный кабинет
               </Link>
               <Link 
-                className={`${cl.navabar__links__item} ${cl.navabar__links__item_log}`} 
+                className={`${cl.navabar__links__item} ${cl.navabar__links__item_notif}`} 
                 to="/notifs"
+                title="Уведомления"
               >
-                Уведомления
+                <FaBell size={20} /> {/* Иконка колокольчика */}
               </Link>
               <button 
                 onClick={handleLogout}

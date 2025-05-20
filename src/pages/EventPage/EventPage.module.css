@@ -580,3 +580,8 @@
   text-align: center;
   animation: fadeIn 0.3s ease;
 }
+
+@media (max-width: 480px) {
+  .eventContainer {
+   margin-top: 250px;
+  }}

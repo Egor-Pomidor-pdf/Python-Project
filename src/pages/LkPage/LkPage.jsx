@@ -24,6 +24,7 @@ const LkPage = () => {
         email: '',
         first_name: '',
         last_name: '',
+        city: '',
         preferences: [],
     })
     const handleInputChange = (e) => {
@@ -87,6 +88,7 @@ const LkPage = () => {
         }
     };
 
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -175,7 +177,16 @@ const LkPage = () => {
                                         placeholder="Введите ваш email"
                                     />
                                 </div>
-                                
+                                <div className={cl.formGroup}>
+                        <label className={cl.label}>Город</label>
+                        <input
+                            className={cl.input}
+                            name="city"
+                            value={userData.city}
+                            onChange={handleInputChange}
+                            placeholder="Введите ваш город"
+                        />
+                    </div>
                                 <div className={cl.formGroup}>
                                     <label className={cl.label}>Предпочтения</label>
                                     <div className={cl.preferencesContainer}>
@@ -240,6 +251,10 @@ const LkPage = () => {
                                     <span className={cl.infoLabel}>Email:</span>
                                     <span className={cl.infoValue}>{userData.email}</span>
                                 </div>
+                                <div className={cl.userInfoItem}>
+                        <span className={cl.infoLabel}>Город:</span>
+                        <span className={cl.infoValue}>{userData.city || 'Не указан'}</span>
+                    </div>
                                 <div className={cl.userInfoItem}>
                                     <span className={cl.infoLabel}>Предпочтения:</span>
                                     <div className={cl.preferencesList}>
