@@ -75,23 +75,16 @@ const Post = ({
   };
 
   const handleArchive = async () => {
-  try {
-    const response = await axios.patch(`/${id}/archive`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    if (response.data.is_archived) {
-      onEventDeleted?.(id);
-      alert('Событие успешно архивировано');
-    } else {
-      alert('Не удалось архивировать событие');
+    try {
+      await axios.patch(`/api/events/${id}/archive`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      onEventUpdated?.();
+    } catch (error) {
+      console.error("Ошибка при архивировании:", error);
     }
-  } catch (error) {
-    console.error("Ошибка при архивировании:", error);
-    alert(error.response?.data?.message || 'Ошибка архивирования');
-  }
-};
-
+  };
+  
   const handleDelete = async () => {
   try {
     await axios.delete(`/${id}/delete`, {
