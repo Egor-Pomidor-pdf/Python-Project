@@ -265,7 +265,7 @@ const EventPage = () => {
                                 <div className={cl.formGroup}>
                                     <label className={cl.formLabel}>Ваша оценка</label>
                                     <div className={cl.starsInput}>
-                                        {[1, 2, 3, 4, 5].map((num) => (
+                                        {[5, 4, 3, 2, 1].map((num) => (
                                             <React.Fragment key={num}>
                                                 <input
                                                     type="radio"
