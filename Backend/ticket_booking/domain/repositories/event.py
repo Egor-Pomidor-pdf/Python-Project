@@ -175,11 +175,11 @@ class EventRepository:
             price=event_data.price,
             available_tickets=event_data.available_tickets,
             is_archived=event_data.is_archived,
-            description=event_data.description
+            description=event_data.description,
+            image_url = event_data.image_url
         )
 
-        result = await self.session.execute(
-            select(Event).where((Event.name == event.name) & (Event.date == event.date)))
+        result = await self.session.execute(select(Event).where((Event.name == event.name) & (Event.date == event.date)))
         result = result.scalar_one_or_none()
         if result:
             raise DuplicationEventExeption()

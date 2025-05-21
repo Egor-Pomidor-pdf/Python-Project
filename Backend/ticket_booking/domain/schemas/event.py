@@ -9,6 +9,7 @@ class EventCreate(BaseModel):
     genre: Optional[str] = None
     price: float
     available_tickets: int
+    is_archived: Optional[bool] = False
     description: Optional[str] = None
     image_url: Optional[str] = None
 
