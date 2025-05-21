@@ -62,7 +62,7 @@
   font-weight: 600;
   color: #5c2aa8;
   min-width: 120px;
-  margin-right: 1rem;
+  margin-right: 2rem;
 }
 
 .infoValue {
@@ -359,4 +359,8 @@
   .ticketsGrid {
       grid-template-columns: 1fr;
   }
+}
+
+.infoLabel_mod {
+  margin-right: 20px; /* Например, для изменения цвета */
 }

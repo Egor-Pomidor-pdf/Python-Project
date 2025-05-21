@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import cl from "./EventPage.module.css";
-import def from "./image/telegram-cloud-photo-size-2-5206223897693908661-y.jpg";
+import def from "./image/Снимок экрана 2025-05-20 в 21.11.02 (2).png";
 
 const EventPage = () => {
     const location = useLocation();
@@ -385,7 +385,7 @@ const EventPage = () => {
                                                 value={cvv}
                                                 onChange={(e) => setCvv(e.target.value)}
                                                 placeholder="123"
-                                                className={cl.input}
+                                                className={`${cl.input} ${cl.input_mod}`}
                                                 required
                                             />
                                         </div>

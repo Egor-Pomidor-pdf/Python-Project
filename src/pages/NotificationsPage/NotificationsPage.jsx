@@ -119,11 +119,7 @@ const NotificationsPage = () => {
             <div className={cl.container}>
                 <div className={cl.header}>
                     <h1 className={cl.title}>Уведомления</h1>
-                    {notifications.length > 0 && (
-                        <button onClick={markAllAsRead} className={cl.markAllButton}>
-                            Прочитать все
-                        </button>
-                    )}
+                   
                 </div>
 
                 {notifications.length === 0 ? (

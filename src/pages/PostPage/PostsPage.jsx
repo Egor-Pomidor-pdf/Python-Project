@@ -22,6 +22,7 @@ const PostsPage = () => {
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [genre, setGenre] = useState('');
+  
 
   // Состояния для фильтрации и пагинации
   const [filters, setFilters] = useState({
@@ -35,7 +36,7 @@ const PostsPage = () => {
     price_max: ''
   });
   const [priceRange, setPriceRange] = useState([0, 10000]);
-  const [posts, setPosts] = useState([{}, {}, {}, {}]);
+  const [posts, setPosts] = useState([{name: "События не подгрузились", description: "Ждем ответ от сервера",image_url: "https://lh3.googleusercontent.com/proxy/xO_QgSZiQ62cwb7YLkvbcMEKuxIZ9O0swoeMxVpHqmewMDUS46aWedgR7NjS7pGQvco-U7PgZOkZa3RWbHFjhF5ydvFhnhJ7llkF" }]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);

@@ -207,7 +207,7 @@
 .filterButton {
   padding: 10px 40px;
   background-color: #7634D3;
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
   border: none;
   border-radius: 50px;
   cursor: pointer;
@@ -676,3 +676,4 @@
 .createEventButton:hover {
   background-color: #0056b3;
 }
+

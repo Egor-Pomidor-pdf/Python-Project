@@ -437,6 +437,10 @@
   transition: all 0.3s ease;
 }
 
+.input_mod {
+  max-width: 170px;
+}
+
 .input:focus {
   outline: none;
   border-color: #7850f0;

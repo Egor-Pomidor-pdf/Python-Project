@@ -43,9 +43,10 @@ const Login = () => {
         localStorage.setItem("auth", "true");
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("userId", userIdentificator);
-        localStorage.setItem("is_specialist", is_specialist);
+       
         if (is_specialist) {
           alert("Привет, спец")
+          localStorage.setItem("is_specialist", is_specialist);
         }
         axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         

@@ -11,6 +11,7 @@ const LkPage = () => {
     const [newPreference, setNewPreference] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const navigate = useNavigate();
+
     const preferenceOptions = [
         "Спорт",
         "Кино",
@@ -26,6 +27,10 @@ const LkPage = () => {
         last_name: '',
         city: '',
         preferences: [],
+        middle_name: "",
+        phone_number: "",
+        middle_name: "",
+        phone_number: ""
     })
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -178,6 +183,27 @@ const LkPage = () => {
                                     />
                                 </div>
                                 <div className={cl.formGroup}>
+                                    <label className={cl.label}>Отчество</label>
+                                    <input
+                                        className={cl.input}
+                                        name="middle_name"
+                                        value={userData.middle_name}
+                                        onChange={handleInputChange}
+                                        placeholder="Введите ваше отчество"
+                                    />
+                                </div>
+                                <div className={cl.formGroup}>
+                                    <label className={cl.label}>Номер телефона</label>
+                                    <input
+                                        className={cl.input}
+                                        name="phone_number"
+                                        value={userData.phone_number}
+                                        onChange={handleInputChange}
+                                        placeholder="+79991234567"
+                                        required
+                                    />
+                                </div>
+                                <div className={cl.formGroup}>
                         <label className={cl.label}>Город</label>
                         <input
                             className={cl.input}
@@ -240,6 +266,10 @@ const LkPage = () => {
                         ) : (
                             <>
                                 <div className={cl.userInfoItem}>
+                                    <span className={cl.infoLabel}>Логин:</span>
+                                    <span className={cl.infoValue}>{userData.username || 'Не указано'}</span>
+                                </div>
+                                <div className={cl.userInfoItem}>
                                     <span className={cl.infoLabel}>Имя:</span>
                                     <span className={cl.infoValue}>{userData.first_name || 'Не указано'}</span>
                                 </div>
@@ -248,13 +278,19 @@ const LkPage = () => {
                                     <span className={cl.infoValue}>{userData.last_name || 'Не указана'}</span>
                                 </div>
                                 <div className={cl.userInfoItem}>
+                                    <span className={cl.infoLabel}>Отчество:</span>
+                                    <span className={cl.infoValue}>{userData.middle_name || 'Не указана'}</span>
+                                </div>
+                                <div className={cl.userInfoItem}>
                                     <span className={cl.infoLabel}>Email:</span>
                                     <span className={cl.infoValue}>{userData.email}</span>
                                 </div>
+                               
                                 <div className={cl.userInfoItem}>
                         <span className={cl.infoLabel}>Город:</span>
                         <span className={cl.infoValue}>{userData.city || 'Не указан'}</span>
                     </div>
+                  
                                 <div className={cl.userInfoItem}>
                                     <span className={cl.infoLabel}>Предпочтения:</span>
                                     <div className={cl.preferencesList}>
@@ -266,6 +302,10 @@ const LkPage = () => {
                                             <span className={cl.noPreferences}>Нет выбранных предпочтений</span>
                                         )}
                                     </div>
+                                </div>
+                                <div className={cl.userInfoItem}>
+                                    <span className={`${cl.infoLabel} ${cl.infoLabel_mod}`}>Номер телефона:</span>
+                                    <span className={cl.infoValue}>{userData.phone_number}</span>
                                 </div>
                             </>
                         )}
