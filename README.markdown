@@ -59,7 +59,11 @@ Zибен Афиша — это web-приложение, разработанн
     ```
 2. **Запуск сервера:**
     ```bash
-    python main.py
+    uvicorn ticket_booking.main:app --host 0.0.0.0 --port 8000
+    ```
+    **Запуск сайта:**
+    ```bash
+    npm start
     ```
 
 ## Демонстрация нашего проекта:
