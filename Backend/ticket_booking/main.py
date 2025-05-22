@@ -22,9 +22,7 @@ app.add_middleware(
     allow_headers=["X-CSRF-Token"],
 )
 
-# Serve static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 
 @app.middleware("http")
 async def add_csrf_token(request: Request, call_next):
@@ -35,12 +33,10 @@ async def add_csrf_token(request: Request, call_next):
     response.headers["X-CSRF-Token"] = token
     return response
 
-
 app.include_router(auth.router)
 app.include_router(events.router)
 app.include_router(booking.router)
 app.include_router(profile.router)
-
 
 async def run_generate_events():
     async with AsyncSessionLocal() as session:
@@ -54,7 +50,6 @@ async def run_generate_events():
             await session.rollback()
             raise e
 
-
 async def run_check_and_notify_recommendations():
     async with AsyncSessionLocal() as session:
         try:
@@ -67,7 +62,6 @@ async def run_check_and_notify_recommendations():
         except Exception as e:
             await session.rollback()
             raise e
-
 
 @app.on_event("startup")
 async def on_startup():
@@ -87,7 +81,6 @@ async def on_startup():
     )
 
     scheduler.start()
-
 
 if __name__ == "__main__":
     import uvicorn

@@ -44,7 +44,7 @@ class EventRepository:
         return updated_event
 
     async def filter_events(self, filters: dict):
-        query = select(Event)
+        query = select(Event).where(Event.is_archived == False)
 
         if filters.get('name'):
             query = query.where(Event.name.ilike(f"%{filters['name']}%"))
@@ -154,6 +154,15 @@ class EventRepository:
         event.is_archived = True
         return event
 
+    async def unarchive_event(self, event_id: int):
+        result = await self.session.execute(select(Event).where(Event.id == event_id))
+        event = result.scalar_one_or_none()
+        if not event:
+            raise EventNotFoundException()
+        event.is_archived = False
+        await self.session.flush()
+        return event
+
     async def delete_event(self, event_id: int):
         result = await self.session.execute(select(Event).where(Event.id == event_id))
         event = result.scalar_one_or_none()
@@ -174,12 +183,11 @@ class EventRepository:
             genre=event_data.genre,
             price=event_data.price,
             available_tickets=event_data.available_tickets,
-            is_archived=event_data.is_archived,
-            description=event_data.description
+            description=event_data.description,
+            image_url = event_data.image_url
         )
 
-        result = await self.session.execute(
-            select(Event).where((Event.name == event.name) & (Event.date == event.date)))
+        result = await self.session.execute(select(Event).where((Event.name == event.name) & (Event.date == event.date)))
         result = result.scalar_one_or_none()
         if result:
             raise DuplicationEventExeption()

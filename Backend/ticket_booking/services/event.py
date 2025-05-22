@@ -16,7 +16,6 @@ from sqlalchemy import select, delete
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 class EventService:
     def __init__(self, event_repository: EventRepository):
         self.event_repo = event_repository
@@ -267,8 +266,9 @@ class EventService:
                 "price": event.price,
                 "available_tickets": event.available_tickets,
                 "description": event.description,
-                "average_rating": result['ratings'].get(event.id, 0),
-                "image_url": event.image_url
+                "average_rating": round(result['ratings'].get(event.id, 0), 2),
+                "image_url": event.image_url,
+                "is_archived": event.is_archived
             }
             events.append(event_data)
 
@@ -292,6 +292,19 @@ class EventService:
         if not event:
             raise ValueError("Event not found")
 
+        # Check for existing rating by the user for this event
+        existing_rating = await session.execute(
+            select(Rating).where(Rating.user_id == user_id, Rating.event_id == event_id)
+        )
+        existing_rating = existing_rating.scalar_one_or_none()
+
+        if existing_rating:
+            # Delete the existing rating
+            await session.execute(
+                delete(Rating).where(Rating.user_id == user_id, Rating.event_id == event_id)
+            )
+
+        # Add the new rating
         rating = Rating(
             user_id=user_id,
             event_id=event_id,
@@ -346,6 +359,22 @@ class EventService:
         if not event:
             raise EventNotFoundException()
 
+        return {
+            "id": event.id,
+            "name": event.name,
+            "date": event.date,
+            "city": event.city,
+            "genre": event.genre,
+            "price": event.price,
+            "available_tickets": event.available_tickets,
+            "is_archived": event.is_archived,
+            "description": event.description
+        }
+
+    async def unarchive_event(self, event_id: int):
+        event = await self.event_repo.unarchive_event(event_id)
+        if not event:
+            raise EventNotFoundException()
         return {
             "id": event.id,
             "name": event.name,
