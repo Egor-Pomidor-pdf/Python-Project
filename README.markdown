@@ -66,10 +66,10 @@ Zибен Афиша — это web-приложение, разработанн
     npm start
     ```
 
-## Демонстрация нашего проекта:
+## Демонстрация проекта  
 <figure>
-  <img src="https://via.placeholder.com/150?text=YouTube" alt="qr YouTube" width="150" style="display: block; margin: 0 auto;">
-  <figcaption style="text-align: center;">YouTube (ссылка будет добавлена)</figcaption>
+  <img src="./qrcode.png" alt="YouTube QR" width="150" style="display: block; margin: 0 auto;">
+  <figcaption style="text-align: center;">Сканируйте QR-код для просмотра видео</figcaption>
 </figure>
 
 ## ...а также платформы, где представлены наши результаты
